@@ -61,6 +61,7 @@ DscTest:
   OutputFormat: NUnitXML
   ExcludeTag:
     - 'Common Tests - New Error-Level Script Analyzer Rules'
+    - 'Common Tests - Script Resource Schema Validation'
   ExcludeSourceFile:
     - output
   ExcludeModuleFile:
