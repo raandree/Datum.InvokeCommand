@@ -5,7 +5,7 @@
 CopyPaths:
   - en-US
 
-Encoding: UTF8
+Encoding: Ascii
 VersionedOutputDirectory: true
 
 ####################################################
