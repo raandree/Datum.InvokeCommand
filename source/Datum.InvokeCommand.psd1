@@ -22,7 +22,7 @@
 
         PSData = @{
 
-            Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'JEA', 'JustEnoughAdministration')
+            Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'Datum')
 
             #LicenseUri   = 'https://github.com/dsccommunity/JeaDsc/blob/master/LICENSE'
 
