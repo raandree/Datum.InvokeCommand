@@ -4,6 +4,8 @@
 ####################################################
 CopyPaths:
   - en-US
+  - Config
+  - Datum.InvokeCommand.Init.ps1
 
 Encoding: UTF8
 VersionedOutputDirectory: true

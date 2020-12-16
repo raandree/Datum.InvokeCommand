@@ -26,30 +26,79 @@ function Invoke-InvokeCommandAction
 
     #>
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $InputObject,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [String]
-        $Header = '[Command=',
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [object]
+        $Node,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [String]
-        $Footer = ']'
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [System.IO.FileInfo]
+        $File
     )
-    
-    $command = $InputObject -replace "^$([regex]::Escape($Header))" -replace "$([regex]::Escape($Footer))$"
-    try
-    {
-        $command = [scriptblock]::Create($command)
-    }
-    catch
-    {
-        Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $inputScript)
-    }
-    
-    Invoke-Command -ScriptBlock $command
 
+    if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
+    {
+        if ($datumType = 
+            & {
+                $errors = $null
+                $tokens = $null
+
+                $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+                    $result,
+                    [ref]$tokens,
+                    [ref]$errors
+                )
+
+                if (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
+                    ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
+                {
+                    'ScriptBlock'
+                }
+                elseif ($tokens |
+                        & {
+                            process
+                            {
+                                if ($_.Kind -eq 'StringExpandable')
+                                {
+                                    $_
+                                }
+                            }
+                        })
+                {
+                    'ExpandableString'
+                }
+                else
+                {
+                    $false
+                }
+            })
+        {
+            if (-not $Node -and $File)
+            {
+                if ($File.Name -ne 'Datum.yml')
+                {
+                    $Node = Get-DatumCurrentNode -File $File
+
+                    if (-not $Node)
+                    {
+                        return $InputObject
+                    }
+                }
+            }
+
+            Resolve-DatumDynamicPart -InputObject $result -DatumType $datumType
+        }
+        else
+        {
+            $InputObject
+        }
+    }
+    else
+    {
+        $InputObject
+    }
 }

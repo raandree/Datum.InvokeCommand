@@ -16,10 +16,10 @@ function Test-InvokeCommandFilter
 
     #>
     param (
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline = $true)]
         [object]
         $InputObject
     )
 
-    $InputObject -is [string] -and $InputObject.Trim() -match "^\[Command=[\w\W]*\]$"
+    $InputObject -is [string] -and $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
 }
