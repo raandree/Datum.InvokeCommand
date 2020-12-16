@@ -5,7 +5,7 @@
 CopyPaths:
   - en-US
 
-Encoding: Ascii
+Encoding: UTF8
 VersionedOutputDirectory: true
 
 ####################################################
@@ -46,7 +46,6 @@ BuildWorkflow:
 
 Pester:
   OutputFormat: NUnitXML
-  ExcludeFromCodeCoverage:
   Script:
     - tests/Unit
     - tests/Integration
@@ -61,22 +60,19 @@ DscTest:
   OutputFormat: NUnitXML
   ExcludeTag:
     - 'Common Tests - New Error-Level Script Analyzer Rules'
-    - 'Common Tests - Script Resource Schema Validation'
+  Tag:
   ExcludeSourceFile:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
 
-Resolve-Dependency:
-  Gallery: 'PSGallery'
-  AllowPrerelease: false
-  Verbose: false
 
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
   DscResource.DocGenerator:
     - 'Task.*'
+
 
 TaskHeader: |
   param($Path)
@@ -88,9 +84,7 @@ TaskHeader: |
   Write-Build DarkGray "  $Path"
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
-GitHubConfig:
-  GitHubFilesToAdd:
-    - 'CHANGELOG.md'
-  GitHubConfigUserName: dscbot
-  GitHubConfigUserEmail: dsccommunity@outlook.com
-  UpdateChangelogOnPrerelease: false
+
+
+
+
