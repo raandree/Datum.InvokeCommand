@@ -1,4 +1,4 @@
-$config = Import-PowerShellDataFile -Path $PSScriptRoot\Datum.InvokeCommand.Config.psd1
+$config = Import-PowerShellDataFile -Path $PSScriptRoot\Config\Datum.InvokeCommand.Config.psd1
 
 $regExString = '{0}(?<Content>.+){1}' -f [regex]::Escape($config.Header), [regex]::Escape($config.Footer)
 

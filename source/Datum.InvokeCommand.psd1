@@ -14,7 +14,9 @@
 
     Description       = 'Datum Handler module to encrypt and decrypt secrets in Datum using Dave Wyatt''s ProtectedData module'
 
-    FunctionsToExport = @('Invoke-InvokeCommandAction', 'Test-InvokeCommandFilter')
+    FunctionsToExport = 'Invoke-InvokeCommandAction', 'Test-InvokeCommandFilter'
+
+    ScriptsToProcess  = 'Datum.InvokeCommand.Init.ps1'
 
     PowerShellVersion = '4.0'
 
@@ -24,11 +26,11 @@
 
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'Datum')
 
-            #LicenseUri   = 'https://github.com/dsccommunity/JeaDsc/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/raandree/Datum.InvokeCommand/blob/master/LICENSE'
 
-            #ProjectUri   = 'https://github.com/dsccommunity/JeaDsc'
+            ProjectUri   = 'https://github.com/raandree/Datum.InvokeCommand'
 
-            #IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
+            IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
 
             Prerelease   = ''
 
