@@ -40,4 +40,4 @@ function Resolve-DatumDynamicPart
         Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $InputObject, $_.Exception.Message)
         return $InputObject
     }
-}    $command = [scriptblock]::Create($command)
+}
