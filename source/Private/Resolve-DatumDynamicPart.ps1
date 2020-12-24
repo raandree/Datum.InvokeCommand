@@ -26,13 +26,22 @@ function Resolve-DatumDynamicPart
     try
     {
         $command = [scriptblock]::Create($InputObject)
-        if ($DatumType -eq 'ScriptBlock')
+        $result = if ($DatumType -eq 'ScriptBlock')
         {
             & (& $command)
         }
         else
         {
             & $command
+        }
+
+        if ($result -is [string])
+        {
+            $ExecutionContext.InvokeCommand.ExpandString($result)
+        }
+        else
+        {
+            $result
         }
     }
     catch
