@@ -28,16 +28,12 @@ function Invoke-InvokeCommandAction
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]
+        [object]
         $InputObject,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [object]
-        $Node,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [System.IO.FileInfo]
-        $File
+        $Node
     )
 
     if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
@@ -77,11 +73,19 @@ function Invoke-InvokeCommandAction
                 }
             })
         {
-            if (-not $Node -and $File)
+            try
             {
-                if ($File.Name -ne 'Datum.yml')
+                $file = Get-Item -Path $InputObject.__File -ErrorAction Ignore
+            }
+            catch
+            {
+            }
+
+            if (-not $Node -and $file)
+            {
+                if ($file.Name -ne 'Datum.yml')
                 {
-                    $Node = Get-DatumCurrentNode -File $File
+                    $Node = Get-DatumCurrentNode -File $file
 
                     if (-not $Node)
                     {
@@ -90,7 +94,14 @@ function Invoke-InvokeCommandAction
                 }
             }
 
-            Resolve-DatumDynamicPart -InputObject $result -DatumType $datumType
+            try
+            {
+                Invoke-InvokeCommandActionInternal -InputObject $result -DatumType $datumType -ErrorAction Stop
+            }
+            catch
+            {
+                Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $result)
+            }
         }
         else
         {

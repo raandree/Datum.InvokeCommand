@@ -18,8 +18,33 @@ function Test-InvokeCommandFilter
     param (
         [Parameter(ValueFromPipeline = $true)]
         [object]
-        $InputObject
+        $InputObject,
+
+        [Parameter()]
+        [switch]
+        $ReturnValue
     )
 
-    $InputObject -is [string] -and $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
+    if ($InputObject -is [string])
+    {
+        $all = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['0'].Value
+        $content = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
+
+        if ($ReturnValue -and $content)
+        {
+            $all
+        }
+        elseif ($content)
+        {
+            return $true
+        }
+        else
+        {
+            return $false
+        }
+    }
+    else
+    {
+        return $false
+    }
 }

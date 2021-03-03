@@ -1,4 +1,4 @@
-function Resolve-DatumDynamicPart
+function Invoke-InvokeCommandActionInternal
 {
     param (
         [Parameter(Mandatory = $true)]
@@ -18,7 +18,8 @@ function Resolve-DatumDynamicPart
         $datum = $DatumTree
     }
 
-    if ((Get-PSCallStack | Select-Object -Skip 1).Command -contains $MyInvocation.MyCommand.Name)
+    #Prevent self-referencing loop
+    if (($InputObject.Contains('Get-DatumRsop')) -and ((Get-PSCallStack).Command | Where-Object { $_ -eq 'Get-DatumRsop' }).Count -gt 1)
     {
         return $InputObject
     }
@@ -35,6 +36,16 @@ function Resolve-DatumDynamicPart
             & $command
         }
 
+        $expressionPart = $true
+        while ($expressionPart)
+        {
+            if ($expressionPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue)
+            {
+                $innerResult = Invoke-InvokeCommandAction -InputObject $result -Node $node
+                $result = $result.Replace($expressionPart, $innerResult)
+            }
+        }
+        
         if ($result -is [string])
         {
             $ExecutionContext.InvokeCommand.ExpandString($result)
@@ -46,7 +57,7 @@ function Resolve-DatumDynamicPart
     }
     catch
     {
-        Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $InputObject, $_.Exception.Message)
+        Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $InputObject, $_.Exception.Message) -Exception $_.Exception
         return $InputObject
     }
 }
