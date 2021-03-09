@@ -1,6 +1,6 @@
 @{
 
     Header = '[x='
-    Footer = ']'
+    Footer = '=]'
 
 }
