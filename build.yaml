@@ -10,6 +10,15 @@ CopyPaths:
 Encoding: UTF8
 VersionedOutputDirectory: true
 
+NestedModule:
+  DscResource.Common:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Common
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
+Prefix: Prefix.ps1
+
 ####################################################
 #             Pipeline Configuration               #
 ####################################################
