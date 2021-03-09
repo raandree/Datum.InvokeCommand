@@ -26,6 +26,9 @@ function Invoke-InvokeCommandActionInternal
 
     try
     {
+        $callId = New-Guid
+        $start = Get-Date
+        Write-Verbose "Invoking command '$InputObject'. CallId is '$callId'"
         $command = [scriptblock]::Create($InputObject)
         $result = if ($DatumType -eq 'ScriptBlock')
         {
@@ -36,16 +39,16 @@ function Invoke-InvokeCommandActionInternal
             & $command
         }
 
-        $expressionPart = $true
-        while ($expressionPart)
-        {
-            if ($expressionPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue)
-            {
+        $dynamicPart = $true
+        while ($dynamicPart) {
+            if ($dynamicPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue) {
                 $innerResult = Invoke-InvokeCommandAction -InputObject $result -Node $node
-                $result = $result.Replace($expressionPart, $innerResult)
+                $result = $result.Replace($dynamicPart, $innerResult)
             }
         }
-        
+        $duration = (Get-Date) - $start
+        Write-Verbose "Invoke with CallId '$callId' has taken $([System.Math]::Round($duration.TotalSeconds, 2)) seconds"
+
         if ($result -is [string])
         {
             $ExecutionContext.InvokeCommand.ExpandString($result)
