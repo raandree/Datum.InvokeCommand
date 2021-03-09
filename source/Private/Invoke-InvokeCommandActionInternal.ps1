@@ -40,8 +40,10 @@ function Invoke-InvokeCommandActionInternal
         }
 
         $dynamicPart = $true
-        while ($dynamicPart) {
-            if ($dynamicPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue) {
+        while ($dynamicPart)
+        {
+            if ($dynamicPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue)
+            {
                 $innerResult = Invoke-InvokeCommandAction -InputObject $result -Node $node
                 $result = $result.Replace($dynamicPart, $innerResult)
             }
