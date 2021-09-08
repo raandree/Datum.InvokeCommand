@@ -38,7 +38,7 @@ function Invoke-InvokeCommandAction
 
     if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
     {
-        if ($datumType = 
+        if ($datumType =
             & {
                 $errors = $null
                 $tokens = $null

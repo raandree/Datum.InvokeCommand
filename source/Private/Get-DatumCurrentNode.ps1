@@ -2,7 +2,8 @@ function Get-DatumCurrentNode
 {
     param (
         [Parameter(Mandatory = $true)]
-        [System.IO.FileInfo]$File
+        [System.IO.FileInfo]
+        $File
     )
 
     $fileNode = $File | Get-Content | ConvertFrom-Yaml

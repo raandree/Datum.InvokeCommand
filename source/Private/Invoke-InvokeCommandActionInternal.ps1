@@ -2,11 +2,13 @@ function Invoke-InvokeCommandActionInternal
 {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$InputObject,
+        [string]
+        $InputObject,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('ExpandableString', 'ScriptBlock')]
-        [string]$DatumType
+        [string]
+        $DatumType
     )
 
     if (-not $datum -and -not $DatumTree)
