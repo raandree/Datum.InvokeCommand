@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gives access to Node and Datum variable
 - Added function 'Get-RelativeNodeFileName'
 - Resolves nested references
+- Added analyzersettings rules
 
 ## [0.1.1] - 2020-08-25
 
