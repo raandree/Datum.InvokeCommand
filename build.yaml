@@ -48,7 +48,6 @@ BuildWorkflow:
     - hqrmtest
 
   publish:
-    - Publish_release_to_GitHub
     - publish_module_to_gallery
 
 ####################################################
@@ -95,7 +94,3 @@ TaskHeader: |
   Write-Build DarkGray "  $Path"
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
-
-
-
-
