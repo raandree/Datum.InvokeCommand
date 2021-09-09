@@ -31,6 +31,10 @@ function Invoke-InvokeCommandAction
         [object]
         $InputObject,
 
+        [Parameter(Mandatory = $true)]
+        [hashtable]
+        $Datum,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [object]
         $Node
@@ -96,7 +100,7 @@ function Invoke-InvokeCommandAction
 
             try
             {
-                Invoke-InvokeCommandActionInternal -InputObject $result -DatumType $datumType -ErrorAction Stop
+                Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop
             }
             catch
             {

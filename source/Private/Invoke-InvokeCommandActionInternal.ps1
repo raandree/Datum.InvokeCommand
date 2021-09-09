@@ -6,6 +6,10 @@ function Invoke-InvokeCommandActionInternal
         $InputObject,
 
         [Parameter(Mandatory = $true)]
+        [hashtable]
+        $Datum,
+
+        [Parameter(Mandatory = $true)]
         [ValidateSet('ExpandableString', 'ScriptBlock')]
         [string]
         $DatumType
@@ -46,7 +50,7 @@ function Invoke-InvokeCommandActionInternal
         {
             if ($dynamicPart = Test-InvokeCommandFilter -InputObject $result -ReturnValue)
             {
-                $innerResult = Invoke-InvokeCommandAction -InputObject $result -Node $node
+                $innerResult = Invoke-InvokeCommandAction -InputObject $result -Datum $Datum -Node $node
                 $result = $result.Replace($dynamicPart, $innerResult)
             }
         }
