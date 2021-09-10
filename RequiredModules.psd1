@@ -21,4 +21,5 @@
     xDscResourceDesigner        = 'latest'
     'DscResource.DocGenerator'  = 'latest'
     Datum                       = 'latest'
+    'Datum.ProtectedData'       = 'latest'
 }
