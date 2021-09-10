@@ -74,8 +74,6 @@ function Get-FilteredConfigurationData {
     $allNodes = @(Get-DatumNodesRecursive -Nodes $Datum.AllNodes -Depth 20)
     $totalNodeCount = $allNodes.Count
 
-    Write-Host "Node count: $($allNodes.Count)"
-
     if($Filter.ToString() -ne ([System.Management.Automation.ScriptBlock]::Create({})).ToString()) {
         Write-Host "Filter: $($Filter.ToString())"
         $allNodes = [System.Collections.Hashtable[]]$allNodes.Where($Filter)
