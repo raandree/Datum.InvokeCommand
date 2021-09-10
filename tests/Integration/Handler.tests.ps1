@@ -26,7 +26,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
         }
     }
 
-    Context 'Base-Type array merge behavior' {
+    Context 'Comparing static with dynamic values' {
 
         $testCases = @(
             @{
@@ -95,7 +95,6 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
             $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
             $cmd2 = [scriptblock]::Create("`$rsop2.$PropertyPath")
             & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
-            #$x | Should -
         }
 
     }
