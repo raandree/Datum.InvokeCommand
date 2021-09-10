@@ -15,4 +15,4 @@ AddsDomainController:
 
 DscTagging:
   Layers:
-    - Baselines\DomaimController
+    - '[x={ Get-RelativeFileName -Path $File } =]'

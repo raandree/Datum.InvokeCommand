@@ -8,4 +8,4 @@ FilesAndFolders:
 
 DscTagging:
   Layers:
-    - Locations\Tokio
+    - '[x={ Get-RelativeFileName -Path $File } =]'

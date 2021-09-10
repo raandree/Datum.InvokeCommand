@@ -23,7 +23,7 @@ lookup_options:
   DscTagging:
     merge_hash: deep
   DscTagging\Layers:
-    merge_basetype_array: Unique
+    merge_basetype_array: Add
 
   WindowsFeatures:
     merge_hash: deep

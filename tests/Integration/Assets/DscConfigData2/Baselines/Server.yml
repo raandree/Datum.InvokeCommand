@@ -27,4 +27,4 @@ ComputerSettings:
 
 DscTagging:
   Layers:
-    - Baselines\Server
+    - '[x={ Get-RelativeFileName -Path $File } =]'
