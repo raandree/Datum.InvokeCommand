@@ -1,8 +1,7 @@
-output/*
-.kitchen/*
-**.bak
-.kitchen.local.yml
+!output/
 
-!**/README.md
-DscResource.tests
-Sampler/Modules/DscResource.Common
+output/*
+!output/RequiredModules/
+
+output/RequiredModules/*
+!output/RequiredModules/datum
