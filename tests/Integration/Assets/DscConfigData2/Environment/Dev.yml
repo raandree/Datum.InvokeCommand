@@ -5,7 +5,7 @@ DscTagging:
 
 FilesAndFolders:
   Items:
-    - DestinationPath: C:\Test\Dev-Environment
+    - DestinationPath: '[x={ "C:\Test\$($File.BaseName)-Environment" } =]'
       Type: Directory
 
 RegistryValues:

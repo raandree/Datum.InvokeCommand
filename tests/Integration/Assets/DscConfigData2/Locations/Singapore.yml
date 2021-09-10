@@ -3,7 +3,7 @@ Configurations:
 
 FilesAndFolders:
   Items:
-    - DestinationPath: C:\Test\Singapore
+    - DestinationPath: '[x={ "C:\Test\$($File.BaseName)" } =]'
       Type: Directory
 
 DscTagging:

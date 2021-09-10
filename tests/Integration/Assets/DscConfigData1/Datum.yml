@@ -7,6 +7,11 @@ ResolutionPrecedence:
   - Baselines\$($Node.Baseline)
   - Baselines\DscLcm
 
+DatumHandlers:
+  Datum.ProtectedData::ProtectedDatum:
+    CommandOptions:
+      PlainTextPassword: SomeSecret
+
 default_lookup_options: MostSpecific
 
 lookup_options:

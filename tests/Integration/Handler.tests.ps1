@@ -29,54 +29,62 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
     Context 'Base-Type array merge behavior' {
 
         $testCases = @(
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'NodeName'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'Environment'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'Description'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'ComputerSettings.Name'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'ComputerSettings.Description'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'NetworkIpConfiguration.Interfaces[0].IpAddress'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'NetworkIpConfiguration.Interfaces[0].Gateway'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'NetworkIpConfiguration.Interfaces[0].DnsServer[0]'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'LcmConfig.ConfigurationRepositoryWeb.Server.ConfigurationNames'
-            #}
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'NodeName'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'Environment'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'Description'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'ComputerSettings.Name'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'ComputerSettings.Description'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].IpAddress'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].Gateway'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].DnsServer[0]'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'LcmConfig.ConfigurationRepositoryWeb.Server.ConfigurationNames'
+            }
             @{
                 Node         = 'DSCFile01'
                 PropertyPath = 'DscTagging.Layers'
             }
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'ComputerSettings.DomainName'
-            #}
-            #@{
-            #    Node         = 'DSCFile01'
-            #    PropertyPath = 'ComputerSettings.JoinOU'
-            #}
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'FilesAndFolders.Items.DestinationPath'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'ComputerSettings.Credential.UserName'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'ComputerSettings.DomainName'
+            }
+            @{
+                Node         = 'DSCFile01'
+                PropertyPath = 'ComputerSettings.JoinOU'
+            }
         )
 
         It "Both values for Datum RSOP property '<PropertyPath>' for node '<Node>' should be equal." -TestCases $testCases {
@@ -87,6 +95,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
             $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
             $cmd2 = [scriptblock]::Create("`$rsop2.$PropertyPath")
             & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
+            #$x | Should -
         }
 
     }
