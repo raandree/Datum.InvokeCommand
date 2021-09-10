@@ -8,4 +8,4 @@ FilesAndFolders:
 
 DscTagging:
   Layers:
-    - Locations\London
+    - '[x={ Get-RelativeFileName -Path $File } =]'

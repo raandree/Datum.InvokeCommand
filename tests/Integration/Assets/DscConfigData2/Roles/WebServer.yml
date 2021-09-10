@@ -30,7 +30,7 @@ WebApplicationPools:
       Ensure: Present
       IdentityType: ApplicationPoolIdentity
       State: Started
-  
+
 WebApplications:
   Items:
     - Name: TestApp1
@@ -70,4 +70,4 @@ WindowsServices:
 
 DscTagging:
   Layers:
-    - Roles\WebServer
+    - '[x={ Get-RelativeFileName -Path $File } =]'

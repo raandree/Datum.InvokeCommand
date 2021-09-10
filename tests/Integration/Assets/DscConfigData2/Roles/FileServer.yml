@@ -36,4 +36,4 @@ SecurityBaseline:
 
 DscTagging:
   Layers:
-    - Roles\FileServer
+    - '[x={ Get-RelativeFileName -Path $File } =]'
