@@ -40,71 +40,84 @@ function Invoke-InvokeCommandAction
         $Node
     )
 
-    if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
-    {
-        if ($datumType =
-            & {
-                $errors = $null
-                $tokens = $null
+    if ($InputObject -is [array]) {
+        $returnValue = @()
+    }
+    else {
+        $returnValue = $null
+    }
 
-                $ast = [System.Management.Automation.Language.Parser]::ParseInput(
-                    $result,
-                    [ref]$tokens,
-                    [ref]$errors
-                )
-
-                if (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
-                    ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
-                {
-                    'ScriptBlock'
-                }
-                elseif ($tokens |
-                        & {
-                            process
-                            {
-                                if ($_.Kind -eq 'StringExpandable')
-                                {
-                                    $_
-                                }
-                            }
-                        })
-                {
-                    'ExpandableString'
-                }
-                else
-                {
-                    $false
-                }
-            })
+    $returnValue += foreach ($value in $InputObject) {
+        if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
         {
-            try
-            {
-                $file = Get-Item -Path $InputObject.__File -ErrorAction Ignore
-            }
-            catch
-            {
-            }
+            if ($datumType =
+                & {
+                    $errors = $null
+                    $tokens = $null
 
-            if (-not $Node -and $file)
-            {
-                if ($file.Name -ne 'Datum.yml')
-                {
-                    $Node = Get-DatumCurrentNode -File $file
+                    $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+                        $result,
+                        [ref]$tokens,
+                        [ref]$errors
+                    )
 
-                    if (-not $Node)
+                    if (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
+                        ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
                     {
-                        return $InputObject
+                        'ScriptBlock'
+                    }
+                    elseif ($tokens |
+                            & {
+                                process
+                                {
+                                    if ($_.Kind -eq 'StringExpandable')
+                                    {
+                                        $_
+                                    }
+                                }
+                            })
+                    {
+                        'ExpandableString'
+                    }
+                    else
+                    {
+                        $false
+                    }
+                })
+            {
+                try
+                {
+                    $file = Get-Item -Path $InputObject.__File -ErrorAction Ignore
+                }
+                catch
+                {
+                }
+
+                if (-not $Node -and $file)
+                {
+                    if ($file.Name -ne 'Datum.yml')
+                    {
+                        $Node = Get-DatumCurrentNode -File $file
+
+                        if (-not $Node)
+                        {
+                            return $InputObject
+                        }
                     }
                 }
-            }
 
-            try
-            {
-                Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop
+                try
+                {
+                    Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop
+                }
+                catch
+                {
+                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $result)
+                }
             }
-            catch
+            else
             {
-                Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $result)
+                $InputObject
             }
         }
         else
@@ -112,8 +125,12 @@ function Invoke-InvokeCommandAction
             $InputObject
         }
     }
-    else
-    {
-        $InputObject
+
+    if ($InputObject -is [array]) {
+        ,$returnValue
     }
+    else {
+        $returnValue
+    }
+
 }
