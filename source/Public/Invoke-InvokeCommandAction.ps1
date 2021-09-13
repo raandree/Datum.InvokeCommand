@@ -40,14 +40,16 @@ function Invoke-InvokeCommandAction
         $Node
     )
 
-    if ($InputObject -is [array]) {
+    if ($InputObject -is [array])
+    {
         $returnValue = @()
     }
     else {
         $returnValue = $null
     }
 
-    $returnValue += foreach ($value in $InputObject) {
+    $returnValue += foreach ($value in $InputObject)
+    {
         if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
         {
             if ($datumType =
@@ -126,7 +128,8 @@ function Invoke-InvokeCommandAction
         }
     }
 
-    if ($InputObject -is [array]) {
+    if ($InputObject -is [array])
+    {
         ,$returnValue
     }
     else {
