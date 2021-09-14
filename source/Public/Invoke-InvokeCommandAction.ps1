@@ -48,9 +48,9 @@ function Invoke-InvokeCommandAction
         $returnValue = $null
     }
 
-    $returnValue += foreach ($value in $InputObject)
+    foreach ($value in $InputObject)
     {
-        if ($result = ($datumInvokeCommandRegEx.Match($InputObject).Groups['Content'].Value))
+        if ($result = ($datumInvokeCommandRegEx.Match($value).Groups['Content'].Value))
         {
             if ($datumType =
                 & {
@@ -89,7 +89,7 @@ function Invoke-InvokeCommandAction
             {
                 try
                 {
-                    $file = Get-Item -Path $InputObject.__File -ErrorAction Ignore
+                    $file = Get-Item -Path $value.__File -ErrorAction Ignore
                 }
                 catch
                 {
@@ -103,14 +103,17 @@ function Invoke-InvokeCommandAction
 
                         if (-not $Node)
                         {
-                            return $InputObject
+                            return $value
                         }
                     }
                 }
 
                 try
                 {
-                    Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop
+                    $returnValue += (Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop).ForEach({
+                        $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
+                    })
+
                 }
                 catch
                 {
@@ -119,12 +122,12 @@ function Invoke-InvokeCommandAction
             }
             else
             {
-                $InputObject
+                $returnValue += $value
             }
         }
         else
         {
-            $InputObject
+            $returnValue += $value
         }
     }
 
