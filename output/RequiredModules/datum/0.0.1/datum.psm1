@@ -173,7 +173,7 @@ function Compare-Hashtable
 function ConvertTo-Datum
 {
     param (
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline = $true)]
         [object]
         $InputObject,
 
@@ -183,18 +183,9 @@ function ConvertTo-Datum
         $DatumHandlers = @{}
     )
 
-    begin
-    {
-        $handlerNames = $DatumHandlers.Keys
-    }
-
     process
     {
         $result = $null
-        if (-not $File -and $InputObject.__File)
-        {
-            $File = $InputObject.__File
-        }
 
         if ($null -eq $InputObject)
         {
@@ -203,19 +194,28 @@ function ConvertTo-Datum
 
         if ($InputObject -is [System.Collections.IDictionary])
         {
+            if (-not $file -and $InputObject.__File)
+            {
+                $file = $InputObject.__File
+            }
+
             $hashKeys = [string[]]$InputObject.Keys
             foreach ($key in $hashKeys)
             {
                 $InputObject[$key] = ConvertTo-Datum -InputObject $InputObject[$key] -DatumHandlers $DatumHandlers
             }
             # Making the Ordered Dict Case Insensitive
-            ([ordered]@{} + $InputObject)
+            ([ordered]@{} + $InputObject) | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
         }
         elseif ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string])
         {
             $collection = @(
                 foreach ($object in $InputObject)
                 {
+                    if (-not $file -and $object.__File)
+                    {
+                        $file = $object.__File
+                    }
                     ConvertTo-Datum -InputObject $object -DatumHandlers $DatumHandlers
                 }
             )
@@ -224,25 +224,35 @@ function ConvertTo-Datum
         }
         elseif (($InputObject -is [DatumProvider]) -and $InputObject -isnot [pscredential])
         {
+            if (-not $file -and $InputObject.__File)
+            {
+                $file = $InputObject.__File
+            }
+
             $hash = [ordered]@{}
 
             foreach ($property in $InputObject.PSObject.Properties)
             {
-                $hash[$property.Name] = ConvertTo-Datum -InputObject $property.Value -DatumHandlers $DatumHandlers
+                $hash[$property.Name] = ConvertTo-Datum -InputObject $property.Value -DatumHandlers $DatumHandlers | Add-Member -Name __File -MemberType NoteProperty -Value $File.FullName -PassThru -Force
             }
 
             $hash
         }
         # if there's a matching filter, process associated command and return result
-        elseif ($HandlerNames.Count -and (Invoke-DatumHandler -InputObject $InputObject -DatumHandlers $DatumHandlers -HandlerNames $HandlerNames -Result ([ref]$result)))
+        elseif ($DatumHandlers.Count -and (Invoke-DatumHandler -InputObject $InputObject -DatumHandlers $DatumHandlers -Result ([ref]$result)))
         {
+            if (-not $file -and $InputObject.__File)
+            {
+                $file = $InputObject.__File
+            }
+
             if (-not $result.__File -and $InputObject.__File)
             {
-                $result | Add-Member -Name __File -Value "$($InputObject.__File)" -MemberType NoteProperty -PassThru
+                $result | Add-Member -Name __File -Value "$($InputObject.__File)" -MemberType NoteProperty -PassThru -Force
             }
-            elseif (-not $result.__File -and $File)
+            elseif (-not $result.__File -and $file)
             {
-                $result | Add-Member -Name __File -Value "$($File)" -MemberType NoteProperty -PassThru
+                $result | Add-Member -Name __File -Value "$($file)" -MemberType NoteProperty -PassThru -Force
             }
             else
             {
@@ -251,9 +261,14 @@ function ConvertTo-Datum
         }
         else
         {
-            if ($File -and -not $InputObject.__File)
+            if (-not $file -and $InputObject.__File)
             {
-                $InputObject | Add-Member -Name __File -Value "$File" -MemberType NoteProperty -PassThru
+                $file = $InputObject.__File
+            }
+
+            if ($file -and -not $InputObject.__File)
+            {
+                $InputObject | Add-Member -Name __File -Value "$file" -MemberType NoteProperty -PassThru -Force
             }
             else
             {
@@ -262,12 +277,12 @@ function ConvertTo-Datum
         }
     }
 }
-#EndRegion '.\Private\ConvertTo-Datum.ps1' 93
+#EndRegion '.\Private\ConvertTo-Datum.ps1' 108
 #Region '.\Private\Copy-Object.ps1' 0
 function Copy-Object
 {
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [object]
         $DeepCopyObject
     )
@@ -279,7 +294,7 @@ function Copy-Object
 #Region '.\Private\Expand-RsopHashtable.ps1' 0
 function Expand-RsopHashtable
 {
-    param(
+    param (
         [Parameter()]
         [object]
         $InputObject,
@@ -461,12 +476,12 @@ function Get-MergeStrategyFromString
 #Region '.\Private\Get-RsopValueString.ps1' 0
 function Get-RsopValueString
 {
-    param(
-        [Parameter(Mandatory)]
+    param (
+        [Parameter(Mandatory = $true)]
         [object]
         $InputString,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [string]
         $Key,
 
@@ -476,6 +491,7 @@ function Get-RsopValueString
         [Parameter()]
         [switch]$IsArrayValue
     )
+
     $fileInfo = (Get-RelativeFileName -Path $InputString.__File)
 
     $i = 120
@@ -492,12 +508,12 @@ function Get-RsopValueString
     $i -= [System.Math]::Max(0, ($depth) * 2)
     "{0}$(if ($fileInfo) { ""{1, $i}""  })" -f $InputString, $fileInfo
 }
-#EndRegion '.\Private\Get-RsopValueString.ps1' 34
+#EndRegion '.\Private\Get-RsopValueString.ps1' 35
 #Region '.\Private\Invoke-DatumHandler.ps1' 0
 function Invoke-DatumHandler
 {
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [object]
         $InputObject,
 
@@ -507,15 +523,12 @@ function Invoke-DatumHandler
         $DatumHandlers,
 
         [Parameter()]
-        [string[]]
-        $HandlerNames,
-
-        [Parameter()]
         [ref]$Result
     )
+
     $return = $false
 
-    foreach ($handler in $HandlerNames)
+    foreach ($handler in $DatumHandlers.Keys)
     {
         if ($DatumHandlers.$handler.SkipDuringLoad -and (Get-PSCallStack).Command -contains 'Get-FileProviderData')
         {
@@ -547,21 +560,23 @@ function Invoke-DatumHandler
                         }
                         elseif ($var = $Variables.Where{ $_.Name -eq $paramName })
                         {
-                            $actionParams."$paramName" = $var.Value
+                            $actionParams."$paramName" = $var[0].Value
                         }
                     }
-                    $result.Value = (&$actionCommand @actionParams)
-                    if ($null -eq $result.Value)
+                    $internalResult = (&$actionCommand @actionParams)
+                    if ($null -eq $internalResult)
                     {
-                        $result.Value = [string]::Empty
+                        $Result.Value = [string]::Empty
                     }
+
+                    $Result.Value = $internalResult
                     return $true
                 }
             }
             catch
             {
                 Write-Warning "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)."
-                $result = $InputObject
+                $Result = $InputObject
                 return $false
             }
         }
@@ -569,7 +584,7 @@ function Invoke-DatumHandler
 
     return $return
 }
-#EndRegion '.\Private\Invoke-DatumHandler.ps1' 76
+#EndRegion '.\Private\Invoke-DatumHandler.ps1' 75
 #Region '.\Private\Merge-DatumArray.ps1' 0
 function Merge-DatumArray
 {
@@ -1129,8 +1144,8 @@ function Get-MergeStrategyFromPath
 function Get-RelativeFileName
 {
     [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)]
+    param (
+        [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
         [string]$Path
     )
@@ -1149,9 +1164,10 @@ function Get-RelativeFileName
     }
     catch
     {
+        Write-Verbose 'Get-RelativeFileName: nothing to catch here'
     }
 }
-#EndRegion '.\Public\Get-RelativeFileName.ps1' 26
+#EndRegion '.\Public\Get-RelativeFileName.ps1' 27
 #Region '.\Public\Invoke-TestHandlerAction.ps1' 0
 function Invoke-TestHandlerAction
 {
@@ -1210,6 +1226,16 @@ function Merge-Datum
     $strategy = Get-MergeStrategyFromPath -Strategies $Strategies -PropertyPath $startingPath -Verbose
 
     Write-Verbose -Message "   Merge Strategy: @$($strategy | ConvertTo-Json)"
+
+    $result = $null
+    if (Invoke-DatumHandler -InputObject $ReferenceDatum -DatumHandlers $Datum.__Definition.DatumHandlers -Result ([ref]$result))
+    {
+        $ReferenceDatum = ConvertTo-Datum -InputObject $result -DatumHandlers $Datum.__Definition.DatumHandlers
+    }
+    if (Invoke-DatumHandler -InputObject $DifferenceDatum -DatumHandlers $Datum.__Definition.DatumHandlers -Result ([ref]$result))
+    {
+        $DifferenceDatum = ConvertTo-Datum -InputObject $result -DatumHandlers $Datum.__Definition.DatumHandlers
+    }
 
     $referenceDatumType = Get-DatumType -DatumObject $ReferenceDatum
     $differenceDatumType = Get-DatumType -DatumObject $DifferenceDatum
@@ -1344,7 +1370,7 @@ function Merge-Datum
         }
     }
 }
-#EndRegion '.\Public\Merge-Datum.ps1' 164
+#EndRegion '.\Public\Merge-Datum.ps1' 174
 #Region '.\Public\New-DatumFileProvider.ps1' 0
 function New-DatumFileProvider
 {
