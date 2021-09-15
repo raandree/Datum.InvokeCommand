@@ -93,6 +93,7 @@ function Invoke-InvokeCommandAction
                 }
                 catch
                 {
+                    Write-Verbose 'Invoke-InvokeCommandAction: Nothing to catch'
                 }
 
                 if (-not $Node -and $file)
