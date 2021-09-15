@@ -36,7 +36,7 @@
 
             ProjectUri   = 'https://github.com/gaelcolas/Datum/'
 
-            ReleaseNotes = '## [0.0.1] - 2021-09-14
+            ReleaseNotes = '## [0.0.1] - 2021-09-15
 
 ### Added
 
