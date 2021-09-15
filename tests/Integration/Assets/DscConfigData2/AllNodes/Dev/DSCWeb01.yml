@@ -55,6 +55,6 @@ HashArray2:
 HashArray3:
   - Name: Item1
     Value: Value1
-  - '[x= { 2..4 } =]'
+  - '[x= { 2..4 | ForEach-Object { @{ Name = "Item$_"; Value = "Value$_" } } } =]'
   - Name: Item5
     Value: Value5
