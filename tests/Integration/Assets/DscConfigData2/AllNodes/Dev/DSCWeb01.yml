@@ -29,3 +29,32 @@ LcmConfig:
 DscTagging:
   Layers:
     - AllNodes\Dev\DscWeb01
+
+Array1:
+  - '[x= { 1..3 } =]'
+
+Array2:
+  - Test1
+  - '[x= { 2..3 | ForEach-Object { "Test$_" } } =]'
+
+Array3:
+  - '[x= { 1..2 | ForEach-Object { "Test$_" } } =]'
+  - Test3
+
+Array4:
+  - Test1
+  - '[x= { 2..4 | ForEach-Object { "Test$_" } } =]'
+  - Test5
+
+HashArray1:
+  - '[x= { @{ Name = "Item1"; Value = "Value1" } } =]'
+
+HashArray2:
+  - '[x= { 1..3 | ForEach-Object { @{ Name = "Item$_"; Value = "Value$_" } } } =]'
+
+HashArray3:
+  - Name: Item1
+    Value: Value1
+  - '[x= { 2..4 } =]'
+  - Name: Item5
+    Value: Value5

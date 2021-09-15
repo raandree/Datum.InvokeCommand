@@ -1,0 +1,32 @@
+NodeName: '[x={ $Node.Name }=]'
+Environment: '[x={ $File.Directory.Name }=]'
+Role: DomainController
+Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
+Location: Frankfurt
+Baseline: Server
+
+ComputerSettings:
+  Name: '[x={ $Node.Name }=]'
+  Description: '[x={ $Node.Description }=]'
+
+NetworkIpConfiguration:
+  Interfaces:
+    - InterfaceAlias: Ethernet
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
+      Prefix: 24
+      Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
+      DnsServer:
+        - '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
+      DisableNetbios: true
+
+PSDscAllowPlainTextPassword: True
+PSDscAllowDomainUser: True
+
+LcmConfig:
+  ConfigurationRepositoryWeb:
+    Server:
+      ConfigurationNames: '[x={ $Node.Name }=]'
+
+DscTagging:
+  Layers:
+    - '[x={ Get-RelativeFileName -Path $File } =]'

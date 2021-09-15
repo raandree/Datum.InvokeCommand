@@ -29,3 +29,49 @@ LcmConfig:
 DscTagging:
   Layers:
     - AllNodes\Dev\DscWeb01
+
+Array1:
+  - 1
+  - 2
+  - 3
+
+Array2:
+  - Test1
+  - Test2
+  - Test3
+
+Array3:
+  - Test1
+  - Test2
+  - Test3
+
+Array4:
+  - Test1
+  - Test2
+  - Test3
+  - Test4
+  - Test5
+
+HashArray1:
+  - Name: Item1
+    Value: Value1
+
+HashArray2:
+  - Name: Item1
+    Value: Value1
+  - Name: Item2
+    Value: Value2
+  - Name: Item3
+    Value: Value3
+
+HashArray3:
+  - Name: Item1
+    Value: Value1
+  - Name: Item2
+    Value: Value2
+  - Name: Item3
+    Value: Value3
+  - Name: Item4
+    Value: Value4
+  - Name: Item5
+    Value: Value5

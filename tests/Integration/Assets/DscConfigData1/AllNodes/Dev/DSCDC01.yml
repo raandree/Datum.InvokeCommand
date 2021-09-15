@@ -1,0 +1,32 @@
+NodeName: DSCDC01
+Environment: Dev
+Role: DomainController
+Description: DomainController in Dev
+Location: Frankfurt
+Baseline: Server
+
+ComputerSettings:
+  Name: DSCDC01
+  Description: DomainController in Dev
+
+NetworkIpConfiguration:
+  Interfaces:
+    - InterfaceAlias: Ethernet
+      IpAddress: 192.168.111.10
+      Prefix: 24
+      Gateway: 192.168.111.50
+      DnsServer:
+        - 192.168.111.10
+      DisableNetbios: true
+
+PSDscAllowPlainTextPassword: True
+PSDscAllowDomainUser: True
+
+LcmConfig:
+  ConfigurationRepositoryWeb:
+    Server:
+      ConfigurationNames: DSCDC01
+
+DscTagging:
+  Layers:
+    - AllNodes\Dev\DSCDC01

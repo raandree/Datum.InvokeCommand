@@ -30,73 +30,80 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
 
         $testCases = @(
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NodeName'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray1.Count'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'Environment'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray1.Keys'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'Description'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray1.Values'
+            }
+
+            @{
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray2.Count'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.Name'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray2.Keys'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.Description'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray2.Values'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].IpAddress'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray2[2].Key'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].Gateway'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray2[2].Value'
+            }
+
+            @{
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray3.Count'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].DnsServer[0]'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray3.Keys'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'LcmConfig.ConfigurationRepositoryWeb.Server.ConfigurationNames'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray3.Values'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'DscTagging.Layers'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray3[-1].Key'
             }
             @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'FilesAndFolders.Items.DestinationPath'
+                Node         = 'DSCWeb01'
+                PropertyPath = 'HashArray3[-1].Value'
             }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.Credential.UserName'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.DomainName'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.JoinOU'
-            }
+
+
         )
 
         It "Both values for Datum RSOP property '<PropertyPath>' for node '<Node>' should be equal." -TestCases $testCases {
-            param ($Node, $PropertyPath, $Value)
+            param ($Node, $PropertyPath, $ScriptBlock, $Value)
 
             $rsop1 = Get-DatumRsop -Datum $datum1 -AllNodes $configurationData1.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
             $rsop2 = Get-DatumRsop -Datum $datum2 -AllNodes $configurationData2.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
-            $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
-            $cmd2 = [scriptblock]::Create("`$rsop2.$PropertyPath")
-            & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
-        }
 
+            if ($PropertyPath) {
+                $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
+                $cmd2 = [scriptblock]::Create("`$rsop2.$PropertyPath")
+            }
+            else {
+                $cmd1 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop1'))
+                $cmd2 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop2'))
+            }
+            & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
+
+        }
     }
 
     AfterAll {

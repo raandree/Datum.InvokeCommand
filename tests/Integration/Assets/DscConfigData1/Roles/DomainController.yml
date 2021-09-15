@@ -1,5 +1,7 @@
 Configurations:
 - AddsDomainController
+- AddsOrgUnitsAndGroups
+- AddsDomainPrincipals
 
 AddsDomainController:
   DomainName: contoso.com
@@ -12,6 +14,29 @@ AddsDomainController:
   SysvolPath: C:\Windows\SYSVOL
   SiteName: Default-First-Site-Name
   IsGlobalCatalog: True
+
+AddsOrgUnitsAndGroups:
+  DomainDn: DC=contoso,DC=com
+  OrgUnits:
+    - Name: Servers
+      Description: Servers OU
+      Path: DC=contoso,DC=com
+
+AddsDomainPrincipals:
+  DomainDn: DC=contoso,DC=com
+  Computers:
+    - ComputerName: DSCFile01
+      Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCFile02
+      Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCFile03
+      Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCWeb01
+      Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCWeb01
+      Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCWeb01
+      Path: OU=Servers,DC=contoso,DC=com
 
 DscTagging:
   Layers:
