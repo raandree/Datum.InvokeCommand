@@ -88,6 +88,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
         )
 
         It "Both values for Datum RSOP property '<PropertyPath>' for node '<Node>' should be equal." -TestCases $testCases {
+
             param ($Node, $PropertyPath, $ScriptBlock, $Value)
 
             $rsop1 = Get-DatumRsop -Datum $datum1 -AllNodes $configurationData1.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
@@ -101,7 +102,13 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
                 $cmd1 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop1'))
                 $cmd2 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop2'))
             }
-            & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
+
+            if ($Value) {
+                & $cmd2 | Sort-Object | Should -Be $Value
+            }
+            else {
+                & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
+            }
 
         }
     }
