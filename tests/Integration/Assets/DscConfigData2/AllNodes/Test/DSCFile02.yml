@@ -1,22 +1,22 @@
-NodeName: DSCFile02
-Environment: Test
+NodeName: '[x={ $Node.Name }=]'
+Environment: '[x={ $File.Directory.Name }=]'
 Role: FileServer
-Description: FileServer in Test
+Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
 Location: Frankfurt
 Baseline: Server
 
 ComputerSettings:
-  Name: DSCFile02
-  Description: FileServer in Test
+  Name: '[x={ $Node.Name }=]'
+  Description: '[x={ $Node.Description }=]'
 
 NetworkIpConfiguration:
   Interfaces:
     - InterfaceAlias: Ethernet
-      IpAddress: 192.168.111.110
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).110" =]'
       Prefix: 24
-      Gateway: 192.168.111.50
+      Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
       DnsServer:
-        - 192.168.111.10
+        - '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
       DisableNetbios: true
 
 PSDscAllowPlainTextPassword: True
@@ -25,8 +25,8 @@ PSDscAllowDomainUser: True
 LcmConfig:
   ConfigurationRepositoryWeb:
     Server:
-      ConfigurationNames: DSCFile02
+      ConfigurationNames: '[x= $Node.Name }=]'
 
 DscTagging:
   Layers:
-    - AllNodes\Test\DscFile02
+    - '[x={ Get-RelativeFileName -Path $File } =]'
