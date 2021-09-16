@@ -44,7 +44,8 @@ function Invoke-InvokeCommandAction
     {
         $returnValue = @()
     }
-    else {
+    else
+    {
         $returnValue = $null
     }
 
@@ -80,8 +81,8 @@ function Invoke-InvokeCommandAction
                 try
                 {
                     $returnValue += (Invoke-InvokeCommandActionInternal -DatumType $datumType -Datum $Datum -ErrorAction Stop).ForEach({
-                        $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
-                    })
+                            $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
+                        })
 
                 }
                 catch
@@ -102,9 +103,10 @@ function Invoke-InvokeCommandAction
 
     if ($InputObject -is [array])
     {
-        ,$returnValue
+        , $returnValue
     }
-    else {
+    else
+    {
         $returnValue
     }
 
