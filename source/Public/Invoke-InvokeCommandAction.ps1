@@ -31,7 +31,7 @@ function Invoke-InvokeCommandAction
         [object]
         $InputObject,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [hashtable]
         $Datum,
 

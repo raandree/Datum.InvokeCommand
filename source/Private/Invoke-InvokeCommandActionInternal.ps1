@@ -5,31 +5,27 @@ function Invoke-InvokeCommandActionInternal
         [hashtable]
         $DatumType,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [hashtable]
         $Datum
     )
 
-    if (-not $datum -and -not $DatumTree)
-    {
-        return $InputObject
-    }
-    elseif (-not $datum -and $DatumTree)
+    if (-not $datum -and $DatumTree)
     {
         $datum = $DatumTree
     }
 
     #Prevent self-referencing loop
-    if (($InputObject.Contains('Get-DatumRsop')) -and ((Get-PSCallStack).Command | Where-Object { $_ -eq 'Get-DatumRsop' }).Count -gt 1)
+    if (($DatumType.Value.Contains('Get-DatumRsop')) -and ((Get-PSCallStack).Command | Where-Object { $_ -eq 'Get-DatumRsop' }).Count -gt 1)
     {
-        return $InputObject
+        return $DatumType.Value
     }
 
     try
     {
         $callId = New-Guid
         $start = Get-Date
-        Write-Verbose "Invoking command '$InputObject'. CallId is '$callId'"
+        Write-Verbose "Invoking command '$($DatumType.Value)'. CallId is '$callId'"
 
         $result = if ($DatumType.Kind -eq 'ScriptBlock')
         {
@@ -68,7 +64,7 @@ function Invoke-InvokeCommandActionInternal
     }
     catch
     {
-        Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $InputObject, $_.Exception.Message) -Exception $_.Exception
-        return $InputObject
+        Write-Error -Message ($script:localizedData.CannotCreateScriptBlock -f $DatumType.Value, $_.Exception.Message) -Exception $_.Exception
+        return $DatumType.Value
     }
 }
