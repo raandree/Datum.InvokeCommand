@@ -22,5 +22,6 @@ function Get-RelativeNodeFileName
     }
     catch
     {
+        Write-Verbose 'Get-RelativeNodeFileName: nothing to catch'
     }
 }
