@@ -50,42 +50,10 @@ function Invoke-InvokeCommandAction
 
     foreach ($value in $InputObject)
     {
-        if ($result = ($datumInvokeCommandRegEx.Match($value).Groups['Content'].Value))
+        $regexResult = ($datumInvokeCommandRegEx.Match($value).Groups['Content'].Value)
+        if ($regexResult)
         {
-            if ($datumType =
-                & {
-                    $errors = $null
-                    $tokens = $null
-
-                    $ast = [System.Management.Automation.Language.Parser]::ParseInput(
-                        $result,
-                        [ref]$tokens,
-                        [ref]$errors
-                    )
-
-                    if (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
-                        ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
-                    {
-                        'ScriptBlock'
-                    }
-                    elseif ($tokens |
-                            & {
-                                process
-                                {
-                                    if ($_.Kind -eq 'StringExpandable')
-                                    {
-                                        $_
-                                    }
-                                }
-                            })
-                    {
-                        'ExpandableString'
-                    }
-                    else
-                    {
-                        $false
-                    }
-                })
+            if ($datumType = Get-ValueKind -InputObject $regexResult)
             {
                 try
                 {
@@ -111,14 +79,14 @@ function Invoke-InvokeCommandAction
 
                 try
                 {
-                    $returnValue += (Invoke-InvokeCommandActionInternal -InputObject $result -Datum $Datum -DatumType $datumType -ErrorAction Stop).ForEach({
+                    $returnValue += (Invoke-InvokeCommandActionInternal -DatumType $datumType -Datum $Datum -ErrorAction Stop).ForEach({
                         $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
                     })
 
                 }
                 catch
                 {
-                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $result)
+                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
                 }
             }
             else

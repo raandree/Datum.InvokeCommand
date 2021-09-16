@@ -2,17 +2,12 @@ function Invoke-InvokeCommandActionInternal
 {
     param (
         [Parameter(Mandatory = $true)]
-        [string]
-        $InputObject,
+        [hashtable]
+        $DatumType,
 
         [Parameter(Mandatory = $true)]
         [hashtable]
-        $Datum,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('ExpandableString', 'ScriptBlock')]
-        [string]
-        $DatumType
+        $Datum
     )
 
     if (-not $datum -and -not $DatumTree)
@@ -35,14 +30,19 @@ function Invoke-InvokeCommandActionInternal
         $callId = New-Guid
         $start = Get-Date
         Write-Verbose "Invoking command '$InputObject'. CallId is '$callId'"
-        $command = [scriptblock]::Create($InputObject)
-        $result = if ($DatumType -eq 'ScriptBlock')
+
+        $result = if ($DatumType.Kind -eq 'ScriptBlock')
         {
+            $command = [scriptblock]::Create($DatumType.Value)
             & (& $command)
+        }
+        elseif ($DatumType.Kind -eq 'ExpandableString')
+        {
+            $ExecutionContext.InvokeCommand.ExpandString($DatumType.Value)
         }
         else
         {
-            & $command
+            $DatumType.Value
         }
 
         $dynamicPart = $true
