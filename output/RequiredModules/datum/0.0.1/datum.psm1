@@ -246,17 +246,25 @@ function ConvertTo-Datum
                 $file = $InputObject.__File
             }
 
-            if (-not $result.__File -and $InputObject.__File)
+            if ($result)
             {
-                $result | Add-Member -Name __File -Value "$($InputObject.__File)" -MemberType NoteProperty -PassThru -Force
-            }
-            elseif (-not $result.__File -and $file)
-            {
-                $result | Add-Member -Name __File -Value "$($file)" -MemberType NoteProperty -PassThru -Force
+                if (-not $result.__File -and $InputObject.__File)
+                {
+                    $result | Add-Member -Name __File -Value "$($InputObject.__File)" -MemberType NoteProperty -PassThru -Force
+                }
+                elseif (-not $result.__File -and $file)
+                {
+                    $result | Add-Member -Name __File -Value "$($file)" -MemberType NoteProperty -PassThru -Force
+                }
+                else
+                {
+                    $result
+                }
             }
             else
             {
-                $result
+                Write-Verbose "Datum handlers for '$InputObject' returned '$null'"
+                $null
             }
         }
         else
@@ -277,7 +285,7 @@ function ConvertTo-Datum
         }
     }
 }
-#EndRegion '.\Private\ConvertTo-Datum.ps1' 108
+#EndRegion '.\Private\ConvertTo-Datum.ps1' 116
 #Region '.\Private\Copy-Object.ps1' 0
 function Copy-Object
 {
@@ -1784,7 +1792,7 @@ function Resolve-Datum
         #through the hierarchy
 
         $arraySb = [System.Collections.ArrayList]@()
-        $currentSearch = Join-Path -Path $searchPrefix -ChildPath $PropertyPath
+        $currentSearch = [System.IO.Path]::Combine($searchPrefix, $PropertyPath)
         Write-Verbose -Message ''
         Write-Verbose -Message " Lookup <$currentSearch> $($Node.Name)"
         #extract script block for execution into array, replace by substition strings {0},{1}...
