@@ -5,7 +5,7 @@ Import-Module -Name Datum.InvokeCommand -Force
 
 InModuleScope Datum.InvokeCommand {
 
-    Describe 'Get-ValueKind Parsing tests' {
+    Describe 'Invoke-InvokeCommandActionInternal tests' {
 
         BeforeAll {
             Mock -CommandName Write-Warning -MockWith { } -ModuleName Datum.InvokeCommand
@@ -77,6 +77,46 @@ InModuleScope Datum.InvokeCommand {
 
             Invoke-InvokeCommandActionInternal -DatumType $data -Datum $datum | Should -Be $datum.Global.Adds.DomainName
 
+            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+        }
+
+        It "Returns the domain name from 'Datum.Global.Adds' (multi-line scriptblock)" {
+            $data = @{
+                Kind  = 'ScriptBlock'
+                Value = '{
+                    $datum.Global.Adds.DomainName
+                }'
+            }
+
+            Invoke-InvokeCommandActionInternal -DatumType $data -Datum $datum | Should -Be $datum.Global.Adds.DomainName
+
+            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+        }
+
+        It "Returns the domain name from 'Datum.Global.Adds' inside a string" {
+            $data = @{
+                Kind  = 'ExpandableString'
+                Value = '"The domain name is $($datum.Global.Adds.DomainName)"'
+            }
+
+            Invoke-InvokeCommandActionInternal -DatumType $data -Datum $datum | Should -Be """The domain name is $($datum.Global.Adds.DomainName)"""
+
+            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+        }
+
+        It "Returns the domain name from 'Datum.Global.Adds' inside a multi-line string" {
+            $data = @{
+                Kind  = 'ExpandableString'
+                Value = @'
+"The domain name is
+$($datum.Global.Adds.DomainName)"
+'@
+            }
+
+            Invoke-InvokeCommandActionInternal -DatumType $data -Datum $datum | Should -Be @"
+"The domain name is
+$($datum.Global.Adds.DomainName)"
+"@
             Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
         }
 

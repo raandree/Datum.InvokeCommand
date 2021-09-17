@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added function 'Get-RelativeNodeFileName'
 - Resolves nested references
 - Added analyzersettings rules
+- Added support for multi-line scriptblocks
 
 ## [0.1.1] - 2020-08-25
 

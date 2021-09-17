@@ -10,16 +10,20 @@ function Get-DatumNodesRecursive
     {
         $expandedNodes = foreach ($node in $Nodes)
         {
-            foreach ($propertyName in ($node.PSObject.Properties | Where-Object MemberType -eq 'ScriptProperty').Name)
+            foreach ($propertyName in ($node.PSObject.Properties | Where-Object MemberType -EQ 'ScriptProperty').Name)
             {
                 $node | ForEach-Object {
                     $newNode = $_."$propertyName"
-                    if ($newNode -is [System.Collections.IDictionary]) {
-                        if (-not $newNode.Contains('Name')) {
-                            if ($propertyName -eq 'AllNodes') {
+                    if ($newNode -is [System.Collections.IDictionary])
+                    {
+                        if (-not $newNode.Contains('Name'))
+                        {
+                            if ($propertyName -eq 'AllNodes')
+                            {
                                 $newNode.Add('Name', '*')
                             }
-                            else {
+                            else
+                            {
                                 $newNode.Add('Name', $propertyName)
                             }
                         }
@@ -54,10 +58,11 @@ function FlattenArray
         [Parameter(Mandatory)]
         [array]$InputObject
     )
-    ,@($InputObject | ForEach-Object { $_ })
+    , @($InputObject | ForEach-Object { $_ })
 }
 
-function Get-FilteredConfigurationData {
+function Get-FilteredConfigurationData
+{
     param(
         [ScriptBlock]
         $Filter = {},
@@ -68,13 +73,14 @@ function Get-FilteredConfigurationData {
         [int]
         $TotalJobCount = 1,
 
-        $Datum = $(Get-variable Datum -ValueOnly -ErrorAction Stop)
+        $Datum = $(Get-Variable Datum -ValueOnly -ErrorAction Stop)
     )
 
     $allNodes = @(Get-DatumNodesRecursive -Nodes $Datum.AllNodes -Depth 20)
     $totalNodeCount = $allNodes.Count
 
-    if($Filter.ToString() -ne ([System.Management.Automation.ScriptBlock]::Create({})).ToString()) {
+    if ($Filter.ToString() -ne ([System.Management.Automation.ScriptBlock]::Create({})).ToString())
+    {
         Write-Host "Filter: $($Filter.ToString())"
         $allNodes = [System.Collections.Hashtable[]]$allNodes.Where($Filter)
         Write-Host "Node count after applying filter: $($allNodes.Count)"
@@ -91,7 +97,7 @@ function Get-FilteredConfigurationData {
 
     return @{
         AllNodes = $allNodes
-        Datum = $Datum
+        Datum    = $Datum
     }
 }
 
@@ -129,4 +135,80 @@ function Split-Array
     }
 
     , $aggregateList
+}
+
+
+function Compare-Hashtable
+{
+    <#
+    .SYNOPSIS
+    Compare two Hashtable and returns an array of differences.
+    .DESCRIPTION
+    The Compare-Hashtable function computes differences between two Hashtables. Results are returned as
+    an array of objects with the properties: "key" (the name of the key that caused a difference),
+    "side" (one of "<=", "!=" or "=>"), "lvalue" an "rvalue" (resp. the left and right value
+    associated with the key).
+    .PARAMETER left
+    The left hand side Hashtable to compare.
+    .PARAMETER right
+    The right hand side Hashtable to compare.
+    .EXAMPLE
+    Returns a difference for ("3 <="), c (3 "!=" 4) and e ("=>" 5).
+    Compare-Hashtable @{ a = 1; b = 2; c = 3 } @{ b = 2; c = 4; e = 5}
+    .EXAMPLE
+    Returns a difference for a ("3 <="), c (3 "!=" 4), e ("=>" 5) and g (6 "<=").
+    $left = @{ a = 1; b = 2; c = 3; f = $Null; g = 6 }
+    $right = @{ b = 2; c = 4; e = 5; f = $Null; g = $Null }
+    Compare-Hashtable $left $right
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Left,
+
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Right
+    )
+
+    function New-Result($Key, $LValue, $Side, $RValue)
+    {
+        New-Object -Type PSObject -Property @{
+            key    = $Key
+            lvalue = $LValue
+            rvalue = $RValue
+            side   = $Side
+        }
+    }
+
+    [object[]]$results = $Left.Keys | ForEach-Object {
+        if ($Left.ContainsKey($_) -and -not $Right.ContainsKey($_))
+        {
+            New-Result -Key $_ -LValue $Left[$_] -Side '<=' -RValue $null
+        }
+        else
+        {
+            if ($Left[$_] -is [hashtable] -and $Right[$_] -is [hashtable] )
+            {
+                Compare-Hashtable -Left $Left[$_] -Right $Right[$_]
+            }
+            else
+            {
+                $LValue, $RValue = $Left[$_], $Right[$_]
+                if ($LValue -ne $RValue)
+                {
+                    New-Result -Key $_ -LValue $LValue -Side '!=' -RValue $RValue
+                }
+            }
+        }
+    }
+    $results += $Right.Keys | ForEach-Object {
+        if (-not $Left.ContainsKey($_) -and $Right.ContainsKey($_))
+        {
+            New-Result -Key $_ -LValue $null -Side '=>' -RValue $Right[$_]
+        }
+    }
+    if ($null -ne $Results)
+    {
+        $Results
+    }
 }

@@ -68,6 +68,36 @@ InModuleScope Datum.InvokeCommand {
             Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
         }
 
+        It 'Valid multi-line script block 1' {
+            $result = Get-ValueKind -InputObject @'
+{
+    Get-Date
+}
+'@
+            $result.Value | Should -Be @'
+{
+    Get-Date
+}
+'@
+            $result.Kind | Should -Be 'Scriptblock'
+
+            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+        }
+
+        It 'Invalid multi-line script block 1' {
+            $result = Get-ValueKind -InputObject @'
+{
+    Get-Date
+'@
+            $result.Value | Should -Be @'
+{
+    Get-Date
+'@
+            $result.Kind | Should -Be 'Invalid'
+
+            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+        }
+
         It 'Valid script block 2' {
             $result = Get-ValueKind -InputObject '{ Get-Process | Sort-Object -Property WS -Descending | Select-Object -First 5 }'
 
