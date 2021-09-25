@@ -313,7 +313,11 @@ function Expand-RsopHashtable
 
         [Parameter()]
         [int]
-        $Depth
+        $Depth,
+
+        [Parameter()]
+        [switch]
+        $NoSourceInformation
     )
 
     $Depth++
@@ -329,7 +333,7 @@ function Expand-RsopHashtable
         $keys = [string[]]$InputObject.Keys
         foreach ($key in $keys)
         {
-            $newObject.$key = Expand-RsopHashtable -InputObject $InputObject[$key] -Depth $Depth
+            $newObject.$key = Expand-RsopHashtable -InputObject $InputObject[$key] -Depth $Depth -NoSourceInformation:$NoSourceInformation
         }
 
         [ordered]@{} + $newObject
@@ -343,7 +347,7 @@ function Expand-RsopHashtable
         }
         $items = foreach ($item in $InputObject)
         {
-            Expand-RsopHashtable -InputObject $item -IsArrayValue:$doesUseYamlArraySyntax -Depth $Depth
+            Expand-RsopHashtable -InputObject $item -IsArrayValue:$doesUseYamlArraySyntax -Depth $Depth -NoSourceInformation:$NoSourceInformation
         }
         $items
     }
@@ -352,11 +356,11 @@ function Expand-RsopHashtable
         $cred = $InputObject.GetNetworkCredential()
         $cred = "$($cred.UserName)@$($cred.Domain)$(if($cred.Domain){':'})$($cred.Password)" | Add-Member -Name __File -MemberType NoteProperty -Value $InputObject.__File -PassThru
 
-        Get-RsopValueString -InputString $cred -Key $key -Depth $depth -IsArrayValue:$IsArrayValue
+        Get-RsopValueString -InputString $cred -Key $key -Depth $depth -IsArrayValue:$IsArrayValue -NoSourceInformation:$NoSourceInformation
     }
     else
     {
-        Get-RsopValueString -InputString $InputObject -Key $key -Depth $depth -IsArrayValue:$IsArrayValue
+        Get-RsopValueString -InputString $InputObject -Key $key -Depth $depth -IsArrayValue:$IsArrayValue -NoSourceInformation:$NoSourceInformation
     }
 }
 #EndRegion '.\Private\Expand-RsopHashtable.ps1' 60
@@ -496,24 +500,35 @@ function Get-RsopValueString
         [int]$Depth,
 
         [Parameter()]
-        [switch]$IsArrayValue
+        [switch]$IsArrayValue,
+
+        [Parameter()]
+        [switch]
+        $NoSourceInformation
     )
 
-    $fileInfo = (Get-RelativeFileName -Path $InputString.__File)
-
-    $i = 120
-    $i = if ($IsArrayValue)
+    if ($NoSourceInformation)
     {
-        $Depth--
-        $i - ("$InputString".Length)
+        $InputString.psobject.BaseObject
     }
     else
     {
-        $i - ($Key.Length + "$InputString".Length)
-    }
+        $fileInfo = (Get-RelativeFileName -Path $InputString.__File)
 
-    $i -= [System.Math]::Max(0, ($depth) * 2)
-    "{0}$(if ($fileInfo) { ""{1, $i}""  })" -f $InputString, $fileInfo
+        $i = 120
+        $i = if ($IsArrayValue)
+        {
+            $Depth--
+            $i - ("$InputString".Length)
+        }
+        else
+        {
+            $i - ($Key.Length + "$InputString".Length)
+        }
+
+        $i -= [System.Math]::Max(0, ($depth) * 2)
+        "{0}$(if ($fileInfo) { ""{1, $i}""  })" -f $InputString, $fileInfo
+    }
 }
 #EndRegion '.\Private\Get-RsopValueString.ps1' 35
 #Region '.\Private\Invoke-DatumHandler.ps1' 0
@@ -959,7 +974,11 @@ function Get-DatumRsop
 
         [Parameter()]
         [switch]
-        $IncludeSource
+        $IncludeSource,
+
+        [Parameter()]
+        [switch]
+        $RemoveSource
     )
 
     if (-not $script:rsopCache)
@@ -1014,6 +1033,10 @@ function Get-DatumRsop
         if ($IncludeSource)
         {
             Expand-RsopHashtable -InputObject $script:rsopCache."$($node.Name)" -Depth 0
+        }
+        elseif ($RemoveSource)
+        {
+            Expand-RsopHashtable -InputObject $script:rsopCache."$($node.Name)" -Depth 0 -NoSourceInformation
         }
         else
         {
@@ -1786,11 +1809,13 @@ function Resolve-Datum
     # Get the strategy for this path, to be used for merging
     $startingMergeStrategy = Get-MergeStrategyFromPath -PropertyPath $PropertyPath -Strategies $Options
 
+    #Invoke datum handlers
+    $PathPrefixes = $PathPrefixes | ConvertTo-Datum -DatumHandlers $datum.__Definition.DatumHandlers
+
     # Walk every search path in listed order, and return datum when found at end of path
     foreach ($searchPrefix in $PathPrefixes)
     {
         #through the hierarchy
-
         $arraySb = [System.Collections.ArrayList]@()
         $currentSearch = [System.IO.Path]::Combine($searchPrefix, $PropertyPath)
         Write-Verbose -Message ''
@@ -1936,4 +1961,3 @@ function Test-TestHandlerFilter
     $InputObject -is [string] -and $InputObject -match '^\[TEST=[\w\W]*\]$'
 }
 #EndRegion '.\Public\Test-TestHandlerFilter.ps1' 12
-
