@@ -29,35 +29,6 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
     Context 'Comparing static with dynamic values' {
 
         $testCases = @(
-
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'Description'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.Name'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'ComputerSettings.Description'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].IpAddress'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].Gateway'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'NetworkIpConfiguration.Interfaces[0].DnsServer[0]'
-            }
-            @{
-                Node         = 'DSCFile01'
-                PropertyPath = 'LcmConfig.ConfigurationRepositoryWeb.Server.ConfigurationNames'
-            }
             @{
                 Node         = 'DSCFile01'
                 PropertyPath = 'DscTagging.Layers'

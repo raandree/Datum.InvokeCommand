@@ -1,8 +1,8 @@
 ResolutionPrecedence:
   - AllNodes\$($Node.Environment)\$($Node.NodeName)
-  - Environment\$($Node.Environment)
+  - '[x= "Environment\$($Node.Environment)" =]'
   - Locations\$($Node.Location)
-  - Roles\$($Node.Role)
+  - '[x={ $Node.Role | ForEach-Object { "Roles\$_" } } =]'
   - Baselines\Security
   - Baselines\$($Node.Baseline)
   - Baselines\DscLcm

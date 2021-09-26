@@ -1,0 +1,31 @@
+NodeName: DSCFileWeb01
+Environment: Dev
+Role: WebServer #2nd role not supported without using the handler Datum.InvokeCommand
+Description: WebServer in Dev
+Location: Singapore
+
+ComputerSettings:
+  Name: DSCWeb01
+  Description: WebServer in Dev
+
+NetworkIpConfiguration:
+  Interfaces:
+    - InterfaceAlias: Ethernet
+      IpAddress: 192.168.111.199
+      Prefix: 24
+      Gateway: 192.168.111.50
+      DnsServer:
+        - 192.168.111.10
+      DisableNetbios: true
+
+PSDscAllowPlainTextPassword: True
+PSDscAllowDomainUser: True
+
+LcmConfig:
+  ConfigurationRepositoryWeb:
+    Server:
+      ConfigurationNames: DSCFilleWeb01
+
+DscTagging:
+  Layers:
+    - AllNodes\Dev\DSCFileWeb01

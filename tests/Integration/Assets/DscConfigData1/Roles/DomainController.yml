@@ -37,6 +37,8 @@ AddsDomainPrincipals:
       Path: OU=Servers,DC=contoso,DC=com
     - ComputerName: DSCWeb01
       Path: OU=Servers,DC=contoso,DC=com
+    - ComputerName: DSCFileWeb01
+      Path: OU=Servers,DC=contoso,DC=com
 
 DscTagging:
   Layers:

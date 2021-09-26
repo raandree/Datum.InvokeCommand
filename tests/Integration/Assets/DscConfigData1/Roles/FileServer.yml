@@ -31,7 +31,7 @@ RegistryValues:
       Ensure: Present
       Force: true
 
-SecurityBaseline:
+SecurityBase:
   Role: FileServer
 
 DscTagging:

@@ -1,6 +1,7 @@
 NodeName: DSCWeb01
 Environment: Dev
-Role: WebServer
+Role:
+- WebServer
 Description: WebServer in Dev
 Location: Singapore
 
