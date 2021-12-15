@@ -87,7 +87,14 @@ function Invoke-InvokeCommandAction
                 }
                 catch
                 {
-                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                    $throwOnError = $false
+                    [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+                    if ($throwOnError) {
+                        Write-Error ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult) -ErrorAction Stop
+                    }
+                    else {
+                        Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                    }
                 }
             }
             else

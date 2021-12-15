@@ -63,6 +63,15 @@ InModuleScope Datum.InvokeCommand {
             Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
         }
 
+        It 'Throws because of an invalid scriptblock and $env:DatumHandlerThrowsOnError == $true' {
+            $inputObject = '[x={ Get-Date =]'
+            $env:DatumHandlerThrowsOnError = $true
+
+            { Invoke-InvokeCommandAction -InputObject $inputObject } | Should -Throw
+
+            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+        }
+
         It 'Returns a datetime object (multi-line string)' {
             $date = Get-Date
             $inputObject = @'

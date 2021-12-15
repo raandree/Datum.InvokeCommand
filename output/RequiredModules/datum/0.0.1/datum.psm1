@@ -597,9 +597,15 @@ function Invoke-DatumHandler
             }
             catch
             {
-                Write-Warning "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)."
-                $Result = $InputObject
-                return $false
+                $throwOnError = $false
+                [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+                if ($throwOnError) {
+                    Write-Error -Message "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)." -Exception $_.Exception -ErrorAction Stop
+                } else {
+                    Write-Warning "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)."
+                    $Result = $InputObject
+                    return $false
+                }
             }
         }
     }
