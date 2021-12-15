@@ -25,6 +25,9 @@ function Invoke-InvokeCommandActionInternal
     {
         $callId = New-Guid
         $start = Get-Date
+        $global:CurrentDatumNode = $Node
+        $global:CurrentDatumFile = $file
+
         Write-Verbose "Invoking command '$($DatumType.Value)'. CallId is '$callId'"
 
         $result = if ($DatumType.Kind -eq 'ScriptBlock')
