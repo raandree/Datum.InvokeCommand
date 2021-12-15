@@ -17,7 +17,10 @@ function Get-ValueKind
         [ref]$errors
     )
 
-    if (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
+    if ($InputObject -notmatch '^{[\s\S]+}$|^"[\s\S]+"$|^''[\s\S]+''$') {
+        Write-Error "The input object is not an ExpandableString, nor a literal string or ScriptBlock"
+    }
+    elseif (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
         ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
     {
         @{
