@@ -48,6 +48,7 @@ BuildWorkflow:
     - hqrmtest
 
   publish:
+    - Publish_Release_To_GitHub
     - publish_module_to_gallery
 
 ####################################################
