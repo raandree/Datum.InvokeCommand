@@ -58,10 +58,7 @@ function Invoke-InvokeCommandAction
             {
                 try
                 {
-                    if ($null -ne $value.__File)
-                    {
-                        $file = Get-Item -Path $value.__File -ErrorAction Stop
-                    }
+                    $file = Get-Item -Path $value.__File -ErrorAction Ignore
                 }
                 catch
                 {
