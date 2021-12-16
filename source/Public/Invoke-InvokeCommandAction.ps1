@@ -66,7 +66,7 @@ function Invoke-InvokeCommandAction
             continue
         }
 
-        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (&{ if ($throwOnError) { 'Stop'} else { 'Continue' } })
+        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (& { if ($throwOnError) { 'Stop' } else { 'Continue' } })
 
         if ($datumType)
         {
