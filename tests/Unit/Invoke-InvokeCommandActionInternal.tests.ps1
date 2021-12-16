@@ -1,6 +1,6 @@
 $here = $PSScriptRoot
 
-Import-Module -Name $here\TestHelpers.psm1 -Force
+Import-Module -Name $ProjectPath\tests\TestHelpers.psm1 -Force
 Import-Module -Name Datum.InvokeCommand -Force
 
 InModuleScope Datum.InvokeCommand {
@@ -19,9 +19,10 @@ InModuleScope Datum.InvokeCommand {
             }
             catch
             {
-                $parent = Split-Path -Path $PSCommandPath -Parent
-                $parent = Join-Path -Path $parent -ChildPath Assets
-                Push-Location -Path $parent -ErrorAction Stop
+                $parentPath = Split-Path -Path $PSCommandPath -Parent
+                    $testsPath = Split-Path -Path $parentPath -Parent
+                    $assetsPath = Join-Path -Path $testsPath -ChildPath Assets
+                    Push-Location -Path $assetsPath -ErrorAction Stop
             }
 
             $datumDefinitionFile = '.\DscConfigData2\Datum.yml'

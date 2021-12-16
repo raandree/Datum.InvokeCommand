@@ -1,13 +1,14 @@
 $here = $PSScriptRoot
 
-Import-Module -Name $here\TestHelpers.psm1 -Force
+Import-Module -Name $ProjectPath\tests\TestHelpers.psm1 -Force
 
-Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
+
+Describe "Testing 'ResolutionPrecedence' based on 'DscWorkshopConfigData' test data" {
     BeforeAll {
         Import-Module -Name datum
 
-        $datumDefinitionFile1 = Join-Path -Path $here -ChildPath '.\Assets\DscConfigData1\Datum.yml' -Resolve
-        $datumDefinitionFile2 = Join-Path -Path $here -ChildPath '.\Assets\DscConfigData2\Datum.yml' -Resolve
+        $datumDefinitionFile1 = Join-Path -Path $ProjectPath\tests -ChildPath '.\Assets\DscConfigData1\Datum.yml' -Resolve
+        $datumDefinitionFile2 = Join-Path -Path $ProjectPath\tests -ChildPath '.\Assets\DscConfigData2\Datum.yml' -Resolve
 
         $datum1 = New-DatumStructure -DefinitionFile $datumDefinitionFile1
         $datum2 = New-DatumStructure -DefinitionFile $datumDefinitionFile2

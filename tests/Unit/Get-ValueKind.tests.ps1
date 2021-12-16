@@ -1,6 +1,6 @@
 $here = $PSScriptRoot
 
-Import-Module -Name $here\TestHelpers.psm1 -Force
+Import-Module -Name $ProjectPath\tests\TestHelpers.psm1 -Force
 Import-Module -Name Datum.InvokeCommand -Force
 
 InModuleScope Datum.InvokeCommand {
