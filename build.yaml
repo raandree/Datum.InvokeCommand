@@ -68,10 +68,12 @@ Pester:
     - helpQuality
     - FunctionalQuality
     - TestQuality
+  ExcludeFromCodeCoverage:
+    - Modules/DscResource.Common
   Tag:
   CodeCoverageOutputFile: JaCoCo_coverage.xml
   CodeCoverageOutputFileEncoding: ascii
-  CodeCoverageThreshold: 80
+  CodeCoverageThreshold: 75
 
 DscTest:
   OutputFormat: NUnitXML
