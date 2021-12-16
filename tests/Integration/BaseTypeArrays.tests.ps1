@@ -105,19 +105,23 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
             $rsop1 = Get-DatumRsop -Datum $datum1 -AllNodes $configurationData1.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
             $rsop2 = Get-DatumRsop -Datum $datum2 -AllNodes $configurationData2.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
 
-            if ($PropertyPath) {
+            if ($PropertyPath)
+            {
                 $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
                 $cmd2 = [scriptblock]::Create("`$rsop2.$PropertyPath")
             }
-            else {
+            else
+            {
                 $cmd1 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop1'))
                 $cmd2 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop2'))
             }
 
-            if ($Value) {
+            if ($Value)
+            {
                 & $cmd2 | Sort-Object | Should -Be $Value
             }
-            else {
+            else
+            {
                 & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
             }
 

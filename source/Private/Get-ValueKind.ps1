@@ -17,8 +17,11 @@ function Get-ValueKind
         [ref]$errors
     )
 
-    if ($InputObject -notmatch '^{[\s\S]+}$|^"[\s\S]+"$|^''[\s\S]+''$') {
-        Write-Error "The input object is not an ExpandableString, nor a literal string or ScriptBlock"
+    $InputObject = $InputObject.Trim()
+
+    if ($InputObject -notmatch '^{[\s\S]+}$|^"[\s\S]+"$|^''[\s\S]+''$')
+    {
+        Write-Error 'Get-ValueKind: The input object is not an ExpandableString, nor a literal string or ScriptBlock'
     }
     elseif (($tokens[0].Kind -eq 'LCurly' -and $tokens[-2].Kind -eq 'RCurly' -and $tokens[-1].Kind -eq 'EndOfInput') -or
         ($tokens[0].Kind -eq 'LCurly' -and $tokens[-3].Kind -eq 'RCurly' -and $tokens[-2].Kind -eq 'NewLine' -and $tokens[-1].Kind -eq 'EndOfInput'))
@@ -37,7 +40,7 @@ function Get-ValueKind
     }
     elseif ($tokens.Where({ $_.Kind -eq 'StringLiteral' }).Count -eq 1)
     {
-        Write-Warning "Invoke-InvokeCommandAction: The value '$InputObject' is a literal string and cannot be expanded."
+        Write-Warning "Get-ValueKind: The value '$InputObject' is a literal string and cannot be expanded."
         @{
             Kind  = 'LiteralString'
             Value = $tokens.Where({ $_.Kind -eq 'StringLiteral' }).Value
@@ -45,10 +48,6 @@ function Get-ValueKind
     }
     else
     {
-        Write-Warning "Invoke-InvokeCommandAction: The value '$InputObject' could not be parsed. It is not a scriptblock nor a string."
-        @{
-            Kind  = 'Invalid'
-            Value = $InputObject
-        }
+        Write-Error "Get-ValueKind: The value '$InputObject' could not be parsed. It is not a scriptblock nor a string."
     }
 }

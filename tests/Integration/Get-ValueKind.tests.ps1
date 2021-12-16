@@ -8,6 +8,7 @@ InModuleScope Datum.InvokeCommand {
     Describe "Get-ValueKind Parsing tests" {
 
         BeforeAll {
+            Mock -CommandName Write-Error -MockWith { } -ModuleName Datum.InvokeCommand
             Mock -CommandName Write-Warning -MockWith { } -ModuleName Datum.InvokeCommand
         }
 
@@ -17,25 +18,23 @@ InModuleScope Datum.InvokeCommand {
             $result.Value | Should -Be 'string'
             $result.Kind | Should -Be 'ExpandableString'
 
-            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 0 -Scope It
         }
 
         It 'Invalid string' {
             $result = Get-ValueKind -InputObject 'string'
 
-            $result.Value | Should -Be 'string'
-            $result.Kind | Should -Be 'Invalid'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
 
         It 'Invalid string' {
             $result = Get-ValueKind -InputObject 'string"'
 
-            $result.Value | Should -Be 'string"'
-            $result.Kind | Should -Be 'Invalid'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
 
         It 'Valid literal string' {
@@ -48,13 +47,11 @@ InModuleScope Datum.InvokeCommand {
         }
 
         It 'Invalid literal string' {
-            #PowerShell parser can deal with incomplete literal strings
             $result = Get-ValueKind -InputObject "'string"
 
-            $result.Value | Should -Be 'string'
-            $result.Kind | Should -Be 'LiteralString'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
 
         #------------------------------------------------------------------------------
@@ -65,7 +62,7 @@ InModuleScope Datum.InvokeCommand {
             $result.Value | Should -Be '{ Get-Date }'
             $result.Kind | Should -Be 'Scriptblock'
 
-            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 0 -Scope It
         }
 
         It 'Valid multi-line script block 1' {
@@ -81,7 +78,7 @@ InModuleScope Datum.InvokeCommand {
 '@
             $result.Kind | Should -Be 'Scriptblock'
 
-            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 0 -Scope It
         }
 
         It 'Invalid multi-line script block 1' {
@@ -89,13 +86,9 @@ InModuleScope Datum.InvokeCommand {
 {
     Get-Date
 '@
-            $result.Value | Should -Be @'
-{
-    Get-Date
-'@
-            $result.Kind | Should -Be 'Invalid'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
 
         It 'Valid script block 2' {
@@ -104,25 +97,23 @@ InModuleScope Datum.InvokeCommand {
             $result.Value | Should -Be "{ Get-Process | Sort-Object -Property WS -Descending | Select-Object -First 5 }"
             $result.Kind | Should -Be 'Scriptblock'
 
-            Assert-MockCalled -CommandName Write-Warning -Times 0 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 0 -Scope It
         }
 
         It 'Invalid script block 1' {
             $result = Get-ValueKind -InputObject '{ Get-Process '
 
-            $result.Value | Should -Be '{ Get-Process '
-            $result.Kind | Should -Be 'Invalid'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
 
         It 'Invalid script block 2' {
             $result = Get-ValueKind -InputObject 'Get-Process }'
 
-            $result.Value | Should -Be 'Get-Process }'
-            $result.Kind | Should -Be 'Invalid'
+            $result.Value | Should -BeNullOrEmpty
 
-            Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Scope It
         }
     }
 }

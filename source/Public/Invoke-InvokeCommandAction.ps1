@@ -40,6 +40,9 @@ function Invoke-InvokeCommandAction
         $Node
     )
 
+    $throwOnError = $false
+    [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+
     if ($InputObject -is [array])
     {
         $returnValue = @()
@@ -52,54 +55,58 @@ function Invoke-InvokeCommandAction
     foreach ($value in $InputObject)
     {
         $regexResult = ($datumInvokeCommandRegEx.Match($value).Groups['Content'].Value)
-        if ($regexResult)
+        if (-not $regexResult -and $throwOnError)
         {
-            if ($datumType = Get-ValueKind -InputObject $regexResult)
+            Write-Error "Could not get the content for the Datum.InvokeCommand handler, RegEx '$($datumInvokeCommandRegEx.ToString())' did not succeed." -ErrorAction Stop
+        }
+        elseif (-not $regexResult -and -not $throwOnError)
+        {
+            Write-Warning "Could not get the content for the Datum.InvokeCommand handler, RegEx '$($datumInvokeCommandRegEx.ToString())' did not succeed."
+            $returnValue += $value
+            continue
+        }
+
+        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (&{ if ($throwOnError) { 'Stop'} else { 'Continue' } })
+
+        if ($datumType)
+        {
+            try
             {
-                try
-                {
-                    $file = Get-Item -Path $value.__File -ErrorAction Ignore
-                }
-                catch
-                {
-                    Write-Verbose 'Invoke-InvokeCommandAction: Nothing to catch'
-                }
+                $file = Get-Item -Path $value.__File -ErrorAction Ignore
+            }
+            catch
+            {
+                Write-Verbose 'Invoke-InvokeCommandAction: Nothing to catch'
+            }
 
-                if (-not $Node -and $file)
+            if (-not $Node -and $file)
+            {
+                if ($file.Name -ne 'Datum.yml')
                 {
-                    if ($file.Name -ne 'Datum.yml')
+                    $Node = Get-DatumCurrentNode -File $file
+
+                    if (-not $Node)
                     {
-                        $Node = Get-DatumCurrentNode -File $file
-
-                        if (-not $Node)
-                        {
-                            return $value
-                        }
-                    }
-                }
-
-                try
-                {
-                    $returnValue += (Invoke-InvokeCommandActionInternal -DatumType $datumType -Datum $Datum -ErrorAction Stop).ForEach({
-                            $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
-                        })
-
-                }
-                catch
-                {
-                    $throwOnError = $false
-                    [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
-                    if ($throwOnError) {
-                        Write-Error ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult) -ErrorAction Stop
-                    }
-                    else {
-                        Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                        return $value
                     }
                 }
             }
-            else
+
+            try
             {
-                $returnValue += $value
+                $returnValue += (Invoke-InvokeCommandActionInternal -DatumType $datumType -Datum $Datum -ErrorAction Stop).ForEach({
+                        $_ | Add-Member -Name __File -MemberType NoteProperty -Value "$file" -PassThru -Force
+                    })
+
+            }
+            catch
+            {
+                $throwOnError = $false
+                [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+
+                else {
+                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                }
             }
         }
         else
