@@ -10,6 +10,10 @@ CopyPaths:
 Encoding: UTF8
 VersionedOutputDirectory: true
 
+####################################################
+#   ModuleBuilder Dependent Modules Configuration  #
+####################################################
+
 NestedModule:
   DscResource.Common:
     CopyOnly: true
@@ -31,7 +35,7 @@ BuildWorkflow:
     - Clean
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
-    - Create_changelog_release_output
+    - Create_Changelog_Release_Output
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
 
@@ -49,7 +53,7 @@ BuildWorkflow:
 
   publish:
     - Publish_Release_To_GitHub
-    - publish_module_to_gallery
+    - Publish_Module_To_gallery
 
 ####################################################
 #       PESTER  Configuration                      #
@@ -65,7 +69,9 @@ Pester:
     - FunctionalQuality
     - TestQuality
   Tag:
-  CodeCoverageThreshold: 0
+  CodeCoverageOutputFile: JaCoCo_coverage.xml
+  CodeCoverageOutputFileEncoding: ascii
+  CodeCoverageThreshold: 80
 
 DscTest:
   OutputFormat: NUnitXML
@@ -76,14 +82,15 @@ DscTest:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
-
+  MainGitBranch: main
 
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
+  Sampler.GitHubTasks:
+    - '*.ib.tasks'
   DscResource.DocGenerator:
     - 'Task.*'
-
 
 TaskHeader: |
   param($Path)
