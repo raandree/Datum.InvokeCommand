@@ -24,7 +24,7 @@ NestedModule:
 Prefix: Prefix.ps1
 
 ####################################################
-#             Pipeline Configuration               #
+#       Pipeline Configuration                     #
 ####################################################
 BuildWorkflow:
   '.':
@@ -35,7 +35,7 @@ BuildWorkflow:
     - Clean
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
-    - Create_Changelog_Release_Output
+    - Create_changelog_release_output
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
 
@@ -48,28 +48,24 @@ BuildWorkflow:
 
   test:
     - Pester_Tests_Stop_On_Fail
-    - Pester_if_Code_Coverage_Under_Threshold
-    - hqrmtest
+    - Pester_If_Code_Coverage_Under_Threshold
 
   publish:
     - Publish_Release_To_GitHub
     - Publish_Module_To_gallery
+    - Publish_GitHub_Wiki_Content
 
 ####################################################
-#       PESTER  Configuration                      #
+#       PESTER Configuration                       #
 ####################################################
 
 Pester:
   OutputFormat: NUnitXML
-  Script:
-    - tests/Unit
-    - tests/Integration
-  ExcludeTag:
-    - helpQuality
-    - FunctionalQuality
-    - TestQuality
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
+  Script:
+    - tests/Unit
+  ExcludeTag:
   Tag:
   CodeCoverageOutputFile: JaCoCo_coverage.xml
   CodeCoverageOutputFileEncoding: ascii
@@ -79,12 +75,16 @@ DscTest:
   OutputFormat: NUnitXML
   ExcludeTag:
     - 'Common Tests - New Error-Level Script Analyzer Rules'
-  Tag:
   ExcludeSourceFile:
     - output
   ExcludeModuleFile:
     - Modules/DscResource.Common
   MainGitBranch: main
+
+Resolve-Dependency:
+  Gallery: 'PSGallery'
+  AllowPrerelease: false
+  Verbose: false
 
 ModuleBuildTasks:
   Sampler:
@@ -104,3 +104,10 @@ TaskHeader: |
   Write-Build DarkGray "  $Path"
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
+
+GitHubConfig:
+  GitHubFilesToAdd:
+    - 'CHANGELOG.md'
+  GitHubConfigUserName: dscbot
+  GitHubConfigUserEmail: dsccommunity@outlook.com
+  UpdateChangelogOnPrerelease: false
