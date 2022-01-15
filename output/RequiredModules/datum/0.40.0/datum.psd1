@@ -2,7 +2,7 @@
 
     RootModule        = 'datum.psm1'
 
-    ModuleVersion     = '0.0.1'
+    ModuleVersion     = '0.40.0'
 
     GUID              = 'e176662d-46b8-4900-8de5-e84f9b4366ee'
 
@@ -22,7 +22,7 @@
         './ScriptsToProcess/Resolve-NodeProperty.ps1'
     )
 
-    FunctionsToExport = @('Get-DatumRsop','Get-FileProviderData','Get-MergeStrategyFromPath','Get-RelativeFileName','Invoke-TestHandlerAction','Merge-Datum','New-DatumFileProvider','New-DatumStructure','Resolve-Datum','Resolve-DatumPath','Test-TestHandlerFilter')
+    FunctionsToExport = @('ConvertTo-Datum','Get-DatumRsop','Get-FileProviderData','Get-MergeStrategyFromPath','Get-RelativeFileName','Invoke-TestHandlerAction','Merge-Datum','New-DatumFileProvider','New-DatumStructure','Resolve-Datum','Resolve-DatumPath','Test-TestHandlerFilter')
 
     AliasesToExport   = ''
 
@@ -36,7 +36,7 @@
 
             ProjectUri   = 'https://github.com/gaelcolas/Datum/'
 
-            ReleaseNotes = '## [0.0.1] - 2021-09-17
+            ReleaseNotes = '## [0.40.0-newdatumhandlerh0001] - 2022-01-15
 
 ### Added
 
@@ -74,7 +74,7 @@
 
 '
 
-            Prerelease   = ''
+            Prerelease   = 'newdatumhandlerh0001'
 
         }
     }
