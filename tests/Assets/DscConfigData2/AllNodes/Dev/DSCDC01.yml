@@ -4,6 +4,7 @@ Role: DomainController
 Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
 Location: Frankfurt
 Baseline: Server
+IpNumber: 10
 
 ComputerSettings:
   Name: '[x={ $Node.Name }=]'
@@ -12,7 +13,7 @@ ComputerSettings:
 NetworkIpConfiguration:
   Interfaces:
     - InterfaceAlias: Ethernet
-      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).$($Node.IpNumber)" =]'
       Prefix: 24
       Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
       DnsServer:

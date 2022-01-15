@@ -1,22 +1,24 @@
-NodeName: DSCWeb01
-Environment: Dev
+NodeName: '[x={ $Node.Name }=]'
+Environment: '[x={ $File.Directory.Name }=]'
 Role:
 - WebServer
-Description: WebServer in Dev
+Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
 Location: Singapore
+Baseline: Server
+IpNumber: 101
 
 ComputerSettings:
-  Name: DSCWeb01
-  Description: WebServer in Dev
+  Name: '[x={ $Node.Name }=]'
+  Description: '[x={ $Node.Description }=]'
 
 NetworkIpConfiguration:
   Interfaces:
     - InterfaceAlias: Ethernet
-      IpAddress: 192.168.111.101
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).$($Node.IpNumber)" =]'
       Prefix: 24
-      Gateway: 192.168.111.50
+      Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
       DnsServer:
-        - 192.168.111.10
+        - '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
       DisableNetbios: true
 
 PSDscAllowPlainTextPassword: True
@@ -25,11 +27,11 @@ PSDscAllowDomainUser: True
 LcmConfig:
   ConfigurationRepositoryWeb:
     Server:
-      ConfigurationNames: DSCWeb01
+      ConfigurationNames: '[x={ $Node.Name }=]'
 
 DscTagging:
   Layers:
-    - AllNodes\Dev\DscWeb01
+    - '[x={ Get-RelativeFileName -Path $File } =]'
 
 Array1:
   - '[x= { 1..3 } =]'

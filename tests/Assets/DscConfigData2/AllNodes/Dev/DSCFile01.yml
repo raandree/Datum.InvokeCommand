@@ -4,15 +4,12 @@ Role: FileServer
 Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
 Location: Frankfurt
 Baseline: Server
-
-ComputerSettings:
-  Name: '[x={ $Node.Name }=]'
-  Description: '[x={ $Node.Description }=]'
+IpNumber: 100
 
 NetworkIpConfiguration:
   Interfaces:
     - InterfaceAlias: Ethernet
-      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).100" =]'
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).$($Node.IpNumber)" =]'
       Prefix: 24
       Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
       DnsServer:
