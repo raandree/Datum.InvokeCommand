@@ -215,7 +215,7 @@ Current month is $((Get-Date).Month)=]'
                 try
                 {
                     #if the test is not invoked by the build script, the $ProjectPath variable does not exist
-                    Push-Location -Path $ProjectPath\tests\Integration\Assets\ -ErrorAction Stop
+                    Push-Location -Path $ProjectPath\tests\Assets\ -ErrorAction Stop
                 }
                 catch
                 {
