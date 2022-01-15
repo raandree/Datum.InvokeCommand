@@ -6,11 +6,8 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
     BeforeAll {
         Import-Module -Name datum
 
-        $datumDefinitionFile1 = Join-Path -Path $here -ChildPath $ProjectPath\tests\Assets\DscConfigData1\Datum.yml -Resolve
-        $datumDefinitionFile2 = Join-Path -Path $here -ChildPath $ProjectPath\tests\Assets\DscConfigData2\Datum.yml -Resolve
-
-        $datum1 = New-DatumStructure -DefinitionFile $datumDefinitionFile1
-        $datum2 = New-DatumStructure -DefinitionFile $datumDefinitionFile2
+        $datum1 = New-DatumStructure -DefinitionFile $ProjectPath\tests\Assets\DscConfigData1\Datum.yml
+        $datum2 = New-DatumStructure -DefinitionFile $ProjectPath\tests\Assets\DscConfigData2\Datum.yml
 
         $configurationData1 = Get-FilteredConfigurationData -Datum $datum1 -Filter {}
         $configurationData2 = Get-FilteredConfigurationData -Datum $datum2 -Filter {}
