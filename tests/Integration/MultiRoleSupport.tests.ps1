@@ -1,16 +1,13 @@
 $here = $PSScriptRoot
 
-Import-Module -Name $here\TestHelpers.psm1 -Force
+Import-Module -Name $ProjectPath\tests\TestHelpers.psm1 -Force
 
 Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
     BeforeAll {
         Import-Module -Name datum
 
-        $datumDefinitionFile1 = Join-Path -Path $here -ChildPath '.\Assets\DscConfigData1\Datum.yml' -Resolve
-        $datumDefinitionFile2 = Join-Path -Path $here -ChildPath '.\Assets\DscConfigData2\Datum.yml' -Resolve
-
-        $datum1 = New-DatumStructure -DefinitionFile $datumDefinitionFile1
-        $datum2 = New-DatumStructure -DefinitionFile $datumDefinitionFile2
+        $datum1 = New-DatumStructure -DefinitionFile $ProjectPath\tests\Assets\DscConfigData1\Datum.yml
+        $datum2 = New-DatumStructure -DefinitionFile $ProjectPath\tests\Assets\DscConfigData2\Datum.yml
 
         $configurationData1 = Get-FilteredConfigurationData -Datum $datum1 -Filter {}
         $configurationData2 = Get-FilteredConfigurationData -Datum $datum2 -Filter {}
@@ -18,7 +15,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
         try
         {
             #if the test is not invoked by the build script, the $ProjectPath variable does not exist
-            Push-Location -Path $ProjectPath\tests\Integration\Assets\ -ErrorAction Stop
+            Push-Location -Path $ProjectPath\tests\Assets\ -ErrorAction Stop
         }
         catch
         {

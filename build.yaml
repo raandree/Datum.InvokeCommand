@@ -65,11 +65,12 @@ Pester:
     - Modules/DscResource.Common
   Script:
     - tests/Unit
+    - tests/Integration
   ExcludeTag:
   Tag:
   CodeCoverageOutputFile: JaCoCo_coverage.xml
   CodeCoverageOutputFileEncoding: ascii
-  CodeCoverageThreshold: 75
+  CodeCoverageThreshold: 10
 
 DscTest:
   OutputFormat: NUnitXML

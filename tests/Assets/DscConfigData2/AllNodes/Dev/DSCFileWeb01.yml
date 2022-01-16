@@ -1,9 +1,12 @@
 NodeName: '[x={ $Node.Name }=]'
 Environment: '[x={ $File.Directory.Name }=]'
-Role: DomainController
+Role:
+  - FileServer
+  - WebServer
 Description: '[x= "$($Node.Role) in $($Node.Environment)" =]'
 Location: Frankfurt
 Baseline: Server
+IpNumber: 199
 
 ComputerSettings:
   Name: '[x={ $Node.Name }=]'
@@ -12,7 +15,7 @@ ComputerSettings:
 NetworkIpConfiguration:
   Interfaces:
     - InterfaceAlias: Ethernet
-      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).10" =]'
+      IpAddress: '[x= "$($Datum.Global.Network.IP.Subnet1).$($Node.IpNumber)" =]'
       Prefix: 24
       Gateway: '[x= "$($Datum.Global.Network.IP.Subnet1).50" =]'
       DnsServer:
@@ -30,3 +33,8 @@ LcmConfig:
 DscTagging:
   Layers:
     - '[x={ Get-RelativeFileName -Path $File } =]'
+
+FilesAndFolders:
+  Items:
+    - DestinationPath: Z:\DoesNotWork
+      Type: Directory
