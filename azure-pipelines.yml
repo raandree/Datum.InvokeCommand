@@ -11,6 +11,9 @@ trigger:
     exclude:
     - "*-*"
 
+variables:
+  MainGitBranch: master
+
 stages:
   - stage: Build
     jobs:
