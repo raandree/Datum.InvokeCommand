@@ -128,6 +128,8 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
+              MainGitBranch: $(MainGitBranch)
+              ReleaseGitBranch: $(MainGitBranch)
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
@@ -137,3 +139,5 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
+              MainGitBranch: $(MainGitBranch)
+              ReleaseGitBranch: $(MainGitBranch)
