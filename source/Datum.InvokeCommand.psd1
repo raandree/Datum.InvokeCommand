@@ -16,8 +16,6 @@
 
     FunctionsToExport = 'Invoke-InvokeCommandAction', 'Test-InvokeCommandFilter'
 
-    ScriptsToProcess  = 'Datum.InvokeCommand.Init.ps1'
-
     PowerShellVersion = '4.0'
 
     PrivateData       = @{
