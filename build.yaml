@@ -82,11 +82,6 @@ DscTest:
     - Modules/DscResource.Common
   MainGitBranch: master
 
-Resolve-Dependency:
-  Gallery: 'PSGallery'
-  AllowPrerelease: false
-  Verbose: false
-
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
