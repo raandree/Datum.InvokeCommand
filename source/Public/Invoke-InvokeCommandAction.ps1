@@ -66,7 +66,7 @@ function Invoke-InvokeCommandAction
             continue
         }
 
-        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (& { if ($throwOnError) { 'Stop' } else { 'Continue' } })
+        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (&{ if ($throwOnError) { 'Stop'} else { 'Continue' } })
 
         if ($datumType)
         {
@@ -103,9 +103,12 @@ function Invoke-InvokeCommandAction
             {
                 $throwOnError = $false
                 [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
-
-                else {
-                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                if ($throwOnError) {
+                    Write-Error -Message "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)." -Exception $_.Exception -ErrorAction Stop
+                } else {
+                    Write-Warning "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)."
+                    $Result = $InputObject
+                    return $false
                 }
             }
         }
