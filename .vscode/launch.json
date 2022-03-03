@@ -20,7 +20,7 @@
         {
             "type": "PowerShell",
             "request": "launch",
-            "name": "Launch DSC Build",
+            "name": "Launch Build",
             "script": "${workspaceRoot}/Build.ps1",
             "args": [],
             "cwd": "${workspaceRoot}/"
