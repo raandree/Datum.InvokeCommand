@@ -40,8 +40,11 @@ function Invoke-InvokeCommandAction
         $Node
     )
 
-    $throwOnError = $false
-    [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+    $throwOnError = $true
+    if (Get-Item -Path Env:\DatumHandlerThrowsOnError -ErrorAction SilentlyContinue)
+    {
+        [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+    }
 
     if ($InputObject -is [array])
     {
@@ -66,7 +69,14 @@ function Invoke-InvokeCommandAction
             continue
         }
 
-        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (& { if ($throwOnError) { 'Stop' } else { 'Continue' } })
+        $datumType = Get-ValueKind -InputObject $regexResult -ErrorAction (& { if ($throwOnError)
+                {
+                    'Stop'
+                }
+                else
+                {
+                    'Continue'
+                } })
 
         if ($datumType)
         {
@@ -101,11 +111,20 @@ function Invoke-InvokeCommandAction
             }
             catch
             {
-                $throwOnError = $false
-                [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
-
-                else {
-                    Write-Warning ($script:localizedData.ErrorCallingInvokeInvokeCommandActionInternal -f $_.Exception.Message, $regexResult)
+                $throwOnError = $true
+                if (Get-Item -Path Env:\DatumHandlerThrowsOnError -ErrorAction SilentlyContinue)
+                {
+                    [void][bool]::TryParse($env:DatumHandlerThrowsOnError, [ref]$throwOnError)
+                }
+                if ($throwOnError)
+                {
+                    Write-Error -Message "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)." -Exception $_.Exception -ErrorAction Stop
+                }
+                else
+                {
+                    Write-Warning "Error using Datum Handler $Handler, the error was: '$($_.Exception.Message)'. Returning InputObject ($InputObject)."
+                    $returnValue += $value
+                    continue
                 }
             }
         }
@@ -123,5 +142,4 @@ function Invoke-InvokeCommandAction
     {
         $returnValue
     }
-
 }
