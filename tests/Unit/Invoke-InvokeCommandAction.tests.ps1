@@ -7,12 +7,11 @@ InModuleScope Datum.InvokeCommand {
 
     Describe 'Invoke-InvokeCommandAction tests' {
 
-        Context '$env:DatumHandlerThrowsOnError == $false' {
+        Context "'DatumHandlersThrowOnError' not set" {
 
             BeforeAll {
                 Mock -CommandName Write-Warning -MockWith { }
                 Mock -CommandName Write-Error -MockWith { }
-                $env:DatumHandlerThrowsOnError = $false
 
                 Import-Module -Name datum
 
@@ -30,7 +29,8 @@ InModuleScope Datum.InvokeCommand {
                 }
 
                 $datumDefinitionFile = '.\DscConfigData2\Datum.yml'
-                $datum = New-DatumStructure -DefinitionFile $datumDefinitionFile
+                $script:datum = New-DatumStructure -DefinitionFile $datumDefinitionFile
+
                 $configurationData = Get-FilteredConfigurationData -Datum $datum -Filter {}
                 $date = Get-Date
             }
@@ -110,7 +110,6 @@ Current month is $((Get-Date).Month)
 
             It 'Returns the InputObject, broken multi-line string' {
                 $date = Get-Date
-                $env:DatumHandlerThrowsOnError = $false
                 $inputObject = @'
 [x="Current year is $((Get-Date).Year)
 Current month is $((Get-Date).Month)=]'
@@ -204,11 +203,10 @@ Current month is $((Get-Date).Month)=]'
 
         }
 
-        Context '$env:DatumHandlerThrowsOnError == $true' {
+        Context "'DatumHandlersThrowOnError' set" {
 
             BeforeAll {
                 Mock -CommandName Write-Warning -MockWith { }
-                $env:DatumHandlerThrowsOnError = $true
 
                 Import-Module -Name datum
 
@@ -227,6 +225,7 @@ Current month is $((Get-Date).Month)=]'
 
                 $datumDefinitionFile = '.\DscConfigData2\Datum.yml'
                 $datum = New-DatumStructure -DefinitionFile $datumDefinitionFile
+                $datum.__Definition.DatumHandlersThrowOnError = $true
                 $configurationData = Get-FilteredConfigurationData -Datum $datum -Filter {}
                 $date = Get-Date
             }
@@ -238,14 +237,14 @@ Current month is $((Get-Date).Month)=]'
             It 'Invalid Input returns $null and throws an error' {
                 $inputObject = '[x={ Get-Date ='
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject } | Should -Throw
+                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
                 $result | Should -BeNullOrEmpty
             }
 
             It 'Invalid ScriptBlock, returns $null and throws an error' {
                 $inputObject = '[x={ Get-Date =]'
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject } | Should -Throw
+                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
                 $result | Should -BeNullOrEmpty
             }
 
@@ -255,7 +254,7 @@ Current month is $((Get-Date).Month)=]'
 Get-Date =]
 '@
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject } | Should -Throw
+                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
                 $result | Should -BeNullOrEmpty
             }
 
@@ -266,14 +265,14 @@ Get-Date =]
 Current month is $((Get-Date).Month)=]'
 '@
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject } | Should -Throw
+                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
                 $result | Should -BeNullOrEmpty
             }
 
             It 'Literal String returns $null and throws an error' {
                 $inputObject = "[x='Get-Date'=]"
 
-                $result = Invoke-InvokeCommandAction -InputObject $inputObject
+                $result = Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum
                 $result | Should -Be 'Get-Date'
 
                 Assert-MockCalled -CommandName Write-Warning -Times 1 -Scope It
