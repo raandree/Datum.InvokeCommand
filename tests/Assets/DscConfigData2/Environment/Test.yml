@@ -1,7 +1,7 @@
 DscTagging:
   Environment: Test
   Layers:
-    - '[x={ Get-RelativeFileName -Path $File } =]'
+    - '[x={ Get-DatumSourceFile -Path $File } =]'
 
 FilesAndFolders:
   Items:

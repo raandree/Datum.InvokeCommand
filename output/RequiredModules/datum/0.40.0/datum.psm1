@@ -396,7 +396,7 @@ function Get-RsopValueString
     }
     else
     {
-        $fileInfo = (Get-RelativeFileName -Path $InputString.__File)
+        $fileInfo = (Get-DatumSourceFile -Path $InputString.__File)
 
         $i = if ($env:DatumRsopIndentation)
         {
@@ -1188,8 +1188,8 @@ function Get-MergeStrategyFromPath
     }
 }
 #EndRegion '.\Public\Get-MergeStrategyFromPath.ps1' 48
-#Region '.\Public\Get-RelativeFileName.ps1' 0
-function Get-RelativeFileName
+#Region '.\Public\Get-DatumSourceFile.ps1' 0
+function Get-DatumSourceFile
 {
     [CmdletBinding()]
     param (
@@ -1212,10 +1212,10 @@ function Get-RelativeFileName
     }
     catch
     {
-        Write-Verbose 'Get-RelativeFileName: nothing to catch here'
+        Write-Verbose 'Get-DatumSourceFile: nothing to catch here'
     }
 }
-#EndRegion '.\Public\Get-RelativeFileName.ps1' 27
+#EndRegion '.\Public\Get-DatumSourceFile.ps1' 27
 #Region '.\Public\Invoke-TestHandlerAction.ps1' 0
 function Invoke-TestHandlerAction
 {
@@ -1982,4 +1982,3 @@ function Test-TestHandlerFilter
     $InputObject -is [string] -and $InputObject -match '^\[TEST=[\w\W]*\]$'
 }
 #EndRegion '.\Public\Test-TestHandlerFilter.ps1' 12
-
