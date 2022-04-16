@@ -3,7 +3,8 @@
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
-            Repository = 'PSGallery'
+            Repository      = 'PSGallery'
+            AllowPreRelease = $true
         }
     }
 
@@ -21,6 +22,6 @@
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
     'DscResource.DocGenerator'  = 'latest'
-    #Datum                       = 'latest'
+    Datum                       = 'latest'
     'Datum.ProtectedData'       = 'latest'
 }
