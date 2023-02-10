@@ -78,7 +78,14 @@ function Invoke-InvokeCommandAction
         {
             try
             {
-                $file = Get-Item -Path $value.__File -ErrorAction Ignore
+                $file = $null
+
+                # avoid TerminatingError in log if $value is an attribute of node.yml
+                # -> in this case $value.__File is $null
+                if( $value.__File )
+                {
+                    $file = Get-Item -Path $value.__File -ErrorAction Ignore
+                }
             }
             catch
             {
