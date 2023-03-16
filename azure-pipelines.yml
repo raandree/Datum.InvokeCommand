@@ -22,15 +22,15 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: gitversion/setup@0
-            displayName: 'Install GitTools'
-            inputs:
-              versionSpec: '5.3.x'
-          - task: gitversion/execute@0
-            name: gitVersion
-            displayName: 'Evaluate Next Version'
-            inputs:
-              configFilePath: 'GitVersion.yml'
+          - pwsh: |
+              dotnet tool install --global GitVersion.Tool
+              $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+              $gitVersionObject.PSObject.Properties.ForEach{
+                  Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+                  Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+              }
+              Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+            displayName: Calculate ModuleVersion (GitVersion)
 
           - task: PowerShell@2
             name: package
@@ -121,6 +121,7 @@ stages:
               buildType: 'current'
               artifactName: 'output'
               targetPath: '$(Build.SourcesDirectory)/output'
+
           - task: PowerShell@2
             name: publishRelease
             displayName: 'Publish Release'
@@ -133,6 +134,7 @@ stages:
               GalleryApiToken: $(GalleryApiToken)
               MainGitBranch: $(MainGitBranch)
               ReleaseGitBranch: $(MainGitBranch)
+
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
