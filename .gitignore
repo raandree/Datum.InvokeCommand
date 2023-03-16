@@ -1,7 +1,1 @@
-!output/
-
-output/*
-!output/RequiredModules/
-
-output/RequiredModules/*
-!output/RequiredModules/datum
+output/
