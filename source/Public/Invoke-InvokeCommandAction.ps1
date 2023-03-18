@@ -37,7 +37,12 @@ function Invoke-InvokeCommandAction
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [object]
-        $Node
+        $Node,
+
+        [Parameter()]
+        [string]
+        $ProjectPath
+
     )
 
     $throwOnError = [bool]$datum.__Definition.DatumHandlersThrowOnError
