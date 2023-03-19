@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more tests and test data for multi-role support and handler support in 'ResolutionPrecedence'.
 - Improved error handling and implemented '$env:DatumHandlerThrowsOnError'.
 - Added parameter `ProjectPath` to `Invoke-InvokeCommandAction`.
+- Updated build scripts to latest Sampler scripts.
 
 ## [0.1.1] - 2020-08-25
 
