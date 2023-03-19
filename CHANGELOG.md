@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added function 'Get-RelativeNodeFileName'.
 - Resolves nested references.
 - Added analyzersettings rules.
-- Added support for multi-line scriptblocks.
+- Added support for multi-line ScriptBlocks.
 - Added more tests and test data for multi-role support and handler support in 'ResolutionPrecedence'.
 - Improved error handling and implemented '$env:DatumHandlerThrowsOnError'.
 - Added parameter `ProjectPath` to `Invoke-InvokeCommandAction`.
