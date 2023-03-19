@@ -51,6 +51,8 @@ BuildWorkflow:
   publish:
     - Publish_Release_To_GitHub
     - Publish_Module_To_gallery
+    - Publish_GitHub_Wiki_Content
+    - Create_ChangeLog_GitHub_PR
 
 ####################################################
 #       PESTER Configuration                       #
@@ -98,9 +100,19 @@ TaskHeader: |
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
 
+####################################################
+#               GitHub Configuration               #
+####################################################
 GitHubConfig:
   GitHubFilesToAdd:
     - 'CHANGELOG.md'
   GitHubConfigUserName: dscbot
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
+
+####################################################
+#             DscResource.DocGenerator             #
+####################################################
+DscResource.DocGenerator:
+  Generate_Conceptual_Help:
+    BuiltModuleSubdirectory: Module
