@@ -1,15 +1,15 @@
 trigger:
   branches:
     include:
-    - master
+      - master
   paths:
     exclude:
-    - CHANGELOG.md
+      - CHANGELOG.md
   tags:
     include:
-    - "v*"
+      - 'v*'
     exclude:
-    - "*-*"
+      - '*-*'
 
 variables:
   MainGitBranch: master
@@ -58,7 +58,7 @@ stages:
         displayName: 'Windows (Windows PowerShell)'
         timeoutInMinutes: 0
         pool:
-          vmImage: 'windows-2019'
+          vmImage: 'windows-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
