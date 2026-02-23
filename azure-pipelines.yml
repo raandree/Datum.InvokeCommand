@@ -13,6 +13,7 @@ trigger:
 
 variables:
   MainGitBranch: master
+  Agent.Source.Git.ShallowFetchDepth: 0
 
 stages:
   - stage: Build
