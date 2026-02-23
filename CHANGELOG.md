@@ -34,6 +34,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated DscResource.DocGenerator configuration.
 - Reorganized `RequiredModules.psd1` for improved readability.
 
+### Fixed
+
+- Fix incorrect module manifest `Description` which referenced
+  Datum.ProtectedData instead of describing this module's actual purpose.
+
+### Added
+
+- Add comprehensive comment-based help for all public functions
+  (`Invoke-InvokeCommandAction`, `Test-InvokeCommandFilter`) with detailed
+  descriptions, parameter documentation, multiple examples, notes, and
+  cross-reference links.
+- Add comment-based help for all private functions
+  (`Invoke-InvokeCommandActionInternal`, `Get-DatumCurrentNode`,
+  `Get-RelativeNodeFileName`, `Get-ValueKind`).
+- Add inline documentation comments to module initialization code
+  in `Prefix.ps1`.
+- Add comprehensive `README.md` with overview, installation instructions,
+  quick start guide, full embedded command syntax reference, available
+  variables, dynamic resolution precedence, nested references,
+  configuration, error handling, exported functions, and a complete
+  end-to-end example.
+- Add `docs/GettingStarted.md` step-by-step tutorial for new users.
+- Add `docs/Architecture.md` describing the internal processing pipeline,
+  module components, error handling strategy, and Datum framework
+  relationship.
+- Add `docs/Troubleshooting.md` covering common issues, diagnostic steps,
+  and resolution guidance.
+
 ## [0.3.0] - 2023-03-20
 
 ### Added

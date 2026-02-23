@@ -1,5 +1,45 @@
 function Invoke-InvokeCommandActionInternal
 {
+    <#
+    .SYNOPSIS
+    Executes the parsed command content extracted from an embedded Datum command string.
+
+    .DESCRIPTION
+    This internal function is called by `Invoke-InvokeCommandAction` after the input has been parsed
+    and its type (script block, expandable string, or literal string) has been determined by
+    `Get-ValueKind`.
+
+    Based on the `DatumType.Kind`, the function performs one of the following:
+    - **ScriptBlock**: Creates and invokes the script block using `[scriptblock]::Create()`.
+    - **ExpandableString**: Expands the string using `$ExecutionContext.InvokeCommand.ExpandString()`.
+    - **Other** (e.g., LiteralString): Returns the value as-is.
+
+    The function also:
+    - Sets `$global:CurrentDatumNode` and `$global:CurrentDatumFile` for use within script blocks.
+    - Detects and prevents self-referencing loops when `Get-DatumRsop` is involved.
+    - Recursively resolves nested embedded commands by calling `Test-InvokeCommandFilter` and
+      `Invoke-InvokeCommandAction` on the result.
+    - Logs invocation timing for performance diagnostics via `Write-Verbose`.
+
+    .PARAMETER DatumType
+    A hashtable containing the parsed command content with the following keys:
+    - `Kind`: The type of content (`ScriptBlock`, `ExpandableString`, or `LiteralString`).
+    - `Value`: The raw content string to evaluate.
+
+    .PARAMETER Datum
+    The Datum structure (hashtable) providing access to the full configuration data hierarchy.
+    Falls back to `$DatumTree` if not provided.
+
+    .NOTES
+    This is a private function and is not exported by the module. It is called exclusively by
+    `Invoke-InvokeCommandAction`.
+
+    .LINK
+    https://github.com/raandree/Datum.InvokeCommand
+
+    .LINK
+    Invoke-InvokeCommandAction
+    #>
     param (
         [Parameter(Mandatory = $true)]
         [hashtable]
