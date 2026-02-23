@@ -48,6 +48,8 @@ Encoding: UTF8
 VersionedOutputDirectory: true
 BuiltModuleSubdirectory: builtModule
 
+Prefix: Prefix.ps1
+
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
