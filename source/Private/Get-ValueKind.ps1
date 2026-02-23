@@ -57,7 +57,7 @@ function Get-ValueKind
     $errors = $null
     $tokens = $null
 
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput(
+    $null = [System.Management.Automation.Language.Parser]::ParseInput(
         $InputObject,
         [ref]$tokens,
         [ref]$errors

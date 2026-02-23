@@ -25,10 +25,16 @@ function Get-RelativeNodeFileName
     .NOTES
     This is a private function and is not exported by the module.
 
+    .EXAMPLE
+    Get-RelativeNodeFileName -Path 'C:\Config\DscConfigData\AllNodes\Dev\DSCFile01.yml'
+
+    Returns 'AllNodes\Dev\DSCFile01' when the current location is 'C:\Config'.
+
     .LINK
     Invoke-InvokeCommandAction
     #>
     [CmdletBinding()]
+    [OutputType([string])]
     param (
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]

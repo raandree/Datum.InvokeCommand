@@ -34,12 +34,19 @@ function Invoke-InvokeCommandActionInternal
     This is a private function and is not exported by the module. It is called exclusively by
     `Invoke-InvokeCommandAction`.
 
+    .EXAMPLE
+    Invoke-InvokeCommandActionInternal -DatumType @{ Kind = 'ScriptBlock'; Value = '{ Get-Date }' } -Datum $datum
+
+    Invokes the script block and returns the current date/time.
+
     .LINK
     https://github.com/raandree/Datum.InvokeCommand
 
     .LINK
     Invoke-InvokeCommandAction
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'global:CurrentDatumNode')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', 'global:CurrentDatumFile')]
     param (
         [Parameter(Mandatory = $true)]
         [hashtable]
