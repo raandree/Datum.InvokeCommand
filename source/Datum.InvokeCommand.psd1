@@ -12,7 +12,7 @@
 
     Copyright         = '(c) 2019 Raimund Andree. All rights reserved.'
 
-    Description       = 'Datum Handler module to encrypt and decrypt secrets in Datum using Dave Wyatt''s ProtectedData module'
+    Description       = 'Datum Handler module to dynamically invoke PowerShell commands and expand strings within Datum configuration data. Enables embedding script blocks and expandable strings in YAML configuration files for DSC (Desired State Configuration) data resolution.'
 
     FunctionsToExport = 'Invoke-InvokeCommandAction', 'Test-InvokeCommandFilter'
 
