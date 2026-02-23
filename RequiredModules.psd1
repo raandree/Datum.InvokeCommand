@@ -1,12 +1,4 @@
 @{
-    PSDependOptions             = @{
-        AddToPath  = $true
-        Target     = 'output\RequiredModules'
-        Parameters = @{
-            Repository      = 'PSGallery'
-            AllowPreRelease = $true
-        }
-    }
 
     InvokeBuild                 = 'latest'
     PSScriptAnalyzer            = 'latest'
