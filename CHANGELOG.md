@@ -56,6 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   configuration, error handling, exported functions, and a complete
   end-to-end example.
 - Add `docs/GettingStarted.md` step-by-step tutorial for new users.
+- Add `source/WikiSource/Home.md` wiki home page with module overview,
+  exported functions, installation instructions, quick start guide,
+  documentation links, and change log reference.
 - Add `docs/Architecture.md` describing the internal processing pipeline,
   module components, error handling strategy, and Datum framework
   relationship.
