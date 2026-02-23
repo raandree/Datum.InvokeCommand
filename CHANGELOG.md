@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Migrated `tests/QA/module.tests.ps1` to Pester 5 syntax using
+  `BeforeDiscovery`/`BeforeAll` blocks, `-ForEach` instead of `foreach`
+  loops for dynamic `Describe` blocks, and updated all legacy `Should`
+  assertions to use the dash-parameter syntax.
 - Updated build files to newest version of Sampler (PR #12).
 - Added GitHub issue templates and pull request template for better
   contribution guidelines.
@@ -38,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix incorrect module manifest `Description` which referenced
   Datum.ProtectedData instead of describing this module's actual purpose.
+- Fix PSScriptAnalyzer `PSUseProcessBlockForPipelineCommand` warning in
+  `Invoke-InvokeCommandAction` and `Test-InvokeCommandFilter` by wrapping
+  the function body in a `process` block.
+
+### Removed
+
+- **Breaking:** Remove unused parameter `ProjectPath` from
+  `Invoke-InvokeCommandAction` to resolve PSScriptAnalyzer
+  `PSReviewUnusedParameter` warning.
 
 ### Added
 

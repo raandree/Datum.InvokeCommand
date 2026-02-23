@@ -43,10 +43,6 @@ function Invoke-InvokeCommandAction
     attempts to resolve the node from the file path using `Get-DatumCurrentNode`. This is made
     available as `$Node` within embedded commands.
 
-    .PARAMETER ProjectPath
-    The root path of the DSC configuration project. Used to resolve relative paths within
-    embedded commands.
-
     .EXAMPLE
     $value = '[x={ Get-Date }=]'
     Invoke-InvokeCommandAction -InputObject $value
@@ -115,15 +111,12 @@ function Invoke-InvokeCommandAction
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [object]
-        $Node,
-
-        [Parameter()]
-        [string]
-        $ProjectPath
-
+        $Node
     )
 
-    $throwOnError = [bool]$datum.__Definition.DatumHandlersThrowOnError
+    process
+    {
+        $throwOnError = [bool]$datum.__Definition.DatumHandlersThrowOnError
 
     if ($InputObject -is [array])
     {
@@ -224,5 +217,6 @@ function Invoke-InvokeCommandAction
     else
     {
         $returnValue
+    }
     }
 }

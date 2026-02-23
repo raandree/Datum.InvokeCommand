@@ -22,6 +22,12 @@ function Get-DatumCurrentNode
     .NOTES
     This is a private function and is not exported by the module.
 
+    .EXAMPLE
+    Get-DatumCurrentNode -File (Get-Item 'C:\Config\DscConfigData\AllNodes\Dev\DSCFile01.yml')
+
+    Returns the resolved node data for 'DSCFile01' by reading the YAML file and
+    performing an RSOP resolution.
+
     .LINK
     Invoke-InvokeCommandAction
     #>

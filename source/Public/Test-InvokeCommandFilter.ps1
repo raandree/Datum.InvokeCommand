@@ -79,7 +79,9 @@ function Test-InvokeCommandFilter
         $ReturnValue
     )
 
-    if ($InputObject -is [string])
+    process
+    {
+        if ($InputObject -is [string])
     {
         $all = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['0'].Value
         $content = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
@@ -100,5 +102,6 @@ function Test-InvokeCommandFilter
     else
     {
         return $false
+    }
     }
 }
