@@ -1,19 +1,22 @@
 trigger:
   branches:
     include:
-      - master
+    - master
   paths:
     exclude:
-      - CHANGELOG.md
+    - CHANGELOG.md
   tags:
     include:
-      - 'v*'
+    - "v*"
     exclude:
-      - '*-*'
+    - "*-*"
 
 variables:
-  MainGitBranch: master
-  Agent.Source.Git.ShallowFetchDepth: 0
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  defaultBranch: master
+  Agent.Source.Git.ShallowFetchDepth: 0 # override ShallowFetchDepth
 
 stages:
   - stage: Build
@@ -44,16 +47,52 @@ stages:
               ModuleVersion: $(NuGetVersionV2)
 
           - task: PublishPipelineArtifact@1
-            displayName: 'Publish Pipeline Artifact'
+            displayName: 'Publish Build Artifact'
             inputs:
-              targetPath: 'output/'
-              artifact: 'output'
+              targetPath: '$(buildFolderName)/'
+              artifact: $(buildArtifactName)
               publishLocation: 'pipeline'
               parallel: true
 
   - stage: Test
     dependsOn: Build
     jobs:
+      - job: test_windows_core
+        displayName: 'Windows (PowerShell)'
+        timeoutInMinutes: 0
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run Tests'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks test'
+              pwsh: true
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Windows (PowerShell)'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Test Artifact'
+            inputs:
+              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+              artifactName: 'CodeCoverageWinPS7'
+              parallel: true
+
       - job: test_windows_ps
         displayName: 'Windows (Windows PowerShell)'
         timeoutInMinutes: 0
@@ -61,18 +100,11 @@ stages:
           vmImage: 'windows-latest'
         steps:
           - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
+            displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              artifactName: 'output'
-              targetPath: '$(Build.SourcesDirectory)/output'
-
-          - powershell: |
-              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-            name: dscBuildVariable
-            displayName: 'Set Environment Variables'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
 
           - task: PowerShell@2
             name: test
@@ -87,16 +119,73 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'Windows Server Core (Windows PowerShell)'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Windows (Windows PowerShell)'
 
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Code Coverage'
-            condition: succeededOrFailed()
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Test Artifact'
             inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'output/testResults/CodeCov*.xml'
-              pathToSources: '$(Build.SourcesDirectory)/output/$(dscBuildVariable.RepositoryName)'
+              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+              artifactName: 'CodeCoverageWinPS51'
+              parallel: true
+
+      # If no code coverage should be reported, then this entire removed:
+      - job: Code_Coverage
+        displayName: 'Publish Code Coverage'
+        dependsOn:
+          - test_windows_core
+          - test_windows_ps
+        pool:
+          vmImage: 'ubuntu-latest'
+        timeoutInMinutes: 0
+        steps:
+          - pwsh: |
+              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+            name: dscBuildVariable
+            displayName: 'Set Environment Variables'
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact Windows (PS 5.1)'
+            inputs:
+              buildType: 'current'
+              artifactName: 'CodeCoverageWinPS51'
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact Windows (PS7)'
+            inputs:
+              buildType: 'current'
+              artifactName: 'CodeCoverageWinPS7'
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+
+          # Make sure to update build.yaml to support these tasks, then uncomment these tasks:
+          #- task: PowerShell@2
+          #  name: merge
+          #  displayName: 'Merge Code Coverage files'
+          #  inputs:
+          #    filePath: './build.ps1'
+          #    arguments: '-tasks merge'
+          #    pwsh: true
+          #- task: PublishCodeCoverageResults@1
+          #  displayName: 'Publish Azure Code Coverage'
+          #  inputs:
+          #    codeCoverageTool: 'JaCoCo'
+          #    summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+          #    pathToSources: '$(Build.SourcesDirectory)/$(dscBuildVariable.RepositoryName)/'
+
+          # Uncomment if Codecov.io should be used (see docs at Codecov.io how to use and the required repository configuration).
+          #- script: |
+          #    bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
+          #  displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
@@ -117,12 +206,11 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
+            displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              artifactName: 'output'
-              targetPath: '$(Build.SourcesDirectory)/output'
-
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
           - task: PowerShell@2
             name: publishRelease
             displayName: 'Publish Release'
@@ -133,9 +221,8 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
-              MainGitBranch: $(MainGitBranch)
-              ReleaseGitBranch: $(MainGitBranch)
-
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
@@ -145,5 +232,5 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
-              MainGitBranch: $(MainGitBranch)
-              ReleaseGitBranch: $(MainGitBranch)
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
