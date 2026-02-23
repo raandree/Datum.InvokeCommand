@@ -16,6 +16,8 @@
 
     FunctionsToExport = 'Invoke-InvokeCommandAction', 'Test-InvokeCommandFilter'
 
+    AliasesToExport   = @()
+
     PowerShellVersion = '4.0'
 
     PrivateData       = @{
