@@ -127,8 +127,29 @@ GitHubConfig:
   UpdateChangelogOnPrerelease: false
 
 ####################################################
-#             DscResource.DocGenerator             #
+#      DscResource.DocGenerator Configuration      #
 ####################################################
 DscResource.DocGenerator:
   Generate_Conceptual_Help:
-    BuiltModuleSubdirectory: Module
+    MarkdownCodeRegularExpression:
+      - '\`(.+?)\`' # Match inline code-block
+      - '\\(\\)' # Match escaped backslash
+      - '\[[^\[]+\]\((.+?)\)' # Match markdown URL
+      - '_(.+?)_' # Match Italic (underscore)
+      - '\*\*(.+?)\*\*' # Match bold
+      - '\*(.+?)\*' # Match Italic (asterisk)
+  Publish_GitHub_Wiki_Content:
+    Debug: false
+  Generate_Markdown_For_DSC_Resources:
+    MofResourceMetadata:
+      Type: MofResource
+      Category: Resources
+    ClassResourceMetadata:
+      Type: ClassResource
+      Category: Resources
+    CompositeResourceMetadata:
+      Type: CompositeResource
+      Category: Resources
+  Generate_Wiki_Sidebar:
+    Debug: false
+    AlwaysOverwrite: true
