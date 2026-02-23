@@ -106,6 +106,13 @@ DscTest:
     - Modules/DscResource.Common
   MainGitBranch: master
 
+####################################################
+#              PSDepend Configuration              #
+####################################################
+Resolve-Dependency:
+  Gallery: 'PSGallery'
+  AllowPrerelease: false
+  Verbose: false
 
 ####################################################
 #               GitHub Configuration               #
