@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated build files to newest version of Sampler (PR #12).
+- Added GitHub issue templates and pull request template for better
+  contribution guidelines.
+- Added VSCode settings for the project.
+- Updated GitVersion.Tool installation to specify version 5.*.
+- Added `Agent.Source.Git.ShallowFetchDepth` variable to pipeline
+  configuration.
+- Added `AliasesToExport` to module manifest for better command aliasing.
+- Updated Windows VM image to 'windows-latest' in Azure Pipelines
+  configuration.
+- Removed `PSDependOptions` from `RequiredModules.psd1` for cleaner
+  configuration.
+- Added `SECURITY.md` for reporting security vulnerabilities and guidelines.
+- Added `codecov.yml` configuration file for coverage reporting.
+- Updated `build.ps1` and `Resolve-Dependency.ps1` build scripts.
+- Refactored Azure Pipelines configuration for improved artifact handling
+  and test reporting.
+- Updated pipeline configuration in `build.yaml`.
+- Updated ModuleBuilder configuration.
+- Updated dependent modules configuration.
+- Added PSDepend configuration.
+- Added ReleaseAssets configuration to GitHub settings.
+- Updated DscResource.DocGenerator configuration.
+- Reorganized `RequiredModules.psd1` for improved readability.
+
 ## [0.3.0] - 2023-03-20
 
 ### Added
