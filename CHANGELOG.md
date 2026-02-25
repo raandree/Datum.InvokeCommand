@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed `master` branch to `main`.
 - Enhance integration tests to assert no handler warnings and non-null
   resolved values, preventing silent passes on handler failures
 - Fix 4 unit tests in `Invoke-InvokeCommandAction.tests.ps1` that

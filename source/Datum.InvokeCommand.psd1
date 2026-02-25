@@ -26,7 +26,7 @@
 
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'Datum')
 
-            LicenseUri   = 'https://github.com/raandree/Datum.InvokeCommand/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/raandree/Datum.InvokeCommand/blob/main/LICENSE'
 
             ProjectUri   = 'https://github.com/raandree/Datum.InvokeCommand'
 
