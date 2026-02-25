@@ -4,7 +4,7 @@ codecov:
   branch: main
 
 comment:
-  layout: "reach, diff, flags, files"
+  layout: 'reach, diff, flags, files'
   behavior: default
 
 coverage:
@@ -23,9 +23,7 @@ coverage:
         # and let codecov.io set the goal for the code changed in the patch.
         target: auto
         threshold: 5
-
 # Use this if there are paths that should not be part of the code coverage, for
 # example a deprecated function where tests has been removed.
 #ignore:
 #  - 'source/Public/Get-Deprecated.ps1'
-
