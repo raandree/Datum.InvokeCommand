@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix `Test-InvokeCommandFilter` emitting `$false` for every non-matching
+  pipeline element in the `process` block, causing `[bool]@($false,$false,$false)`
+  to evaluate as `$true` and triggering the handler on non-string collections
+- Fix incorrect property name `.Key` to `.Name` in `HashArray2[2]` and
+  `HashArray3[-1]` test cases in `HashArrays.tests.ps1`
+
+### Changed
+
+- Enhance integration tests to assert no handler warnings and non-null
+  resolved values, preventing silent passes on handler failures
+- Fix 4 unit tests in `Invoke-InvokeCommandAction.tests.ps1` that
+  asserted an undefined `$result` variable after `Should -Throw`
+
+### Added
+
+- Add `Get-DatumRsopSafe` helper to `TestHelpers.psm1` that captures
+  the warning stream alongside the RSOP result for test assertions
+- Add pipeline collection tests for `Test-InvokeCommandFilter` to verify
+  correct behavior with non-string collections and mixed input
+
 ## [0.4.0] - 2026-02-23
 
 ### Changed

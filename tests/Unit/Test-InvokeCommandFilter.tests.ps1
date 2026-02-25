@@ -46,4 +46,65 @@ Describe 'Test-InvokeCommandFilter tests' {
 
         $result | Should -BeTrue
     }
+
+    Context 'Pipeline enumeration with collections' {
+
+        It 'Returns no output when an ArrayList of OrderedDictionary objects is piped' {
+            $collection = [System.Collections.ArrayList]@(
+                [ordered]@{ InterfaceAlias = 'Ethernet 1'; IpAddress = '192.168.10.100' },
+                [ordered]@{ InterfaceAlias = 'Ethernet 2'; IpAddress = '192.168.20.100' },
+                [ordered]@{ InterfaceAlias = 'Ethernet 3'; IpAddress = '192.168.30.100' }
+            )
+
+            $result = $collection | Test-InvokeCommandFilter
+
+            $result | Should -BeNullOrEmpty
+            [bool]$result | Should -BeFalse
+        }
+
+        It 'Returns no output when a single OrderedDictionary is piped' {
+            $dict = [ordered]@{ InterfaceAlias = 'Ethernet 1'; IpAddress = '192.168.10.100' }
+
+            $result = $dict | Test-InvokeCommandFilter
+
+            $result | Should -BeNullOrEmpty
+            [bool]$result | Should -BeFalse
+        }
+
+        It 'Returns $true when a matching string is piped in a collection with non-strings' {
+            $collection = @(
+                [ordered]@{ Key = 'Value' },
+                '[x={ Get-Date }=]',
+                42
+            )
+
+            $result = $collection | Test-InvokeCommandFilter
+
+            $result | Should -BeTrue
+            [bool]$result | Should -BeTrue
+        }
+
+        It 'Returns no output when non-matching strings are piped' {
+            $collection = @('plain string', 'another string', 'no command here')
+
+            $result = $collection | Test-InvokeCommandFilter
+
+            $result | Should -BeNullOrEmpty
+            [bool]$result | Should -BeFalse
+        }
+
+        It 'Returns $false for non-string input via direct parameter binding' {
+            $dict = [ordered]@{ InterfaceAlias = 'Ethernet 1' }
+
+            $result = Test-InvokeCommandFilter -InputObject $dict
+
+            $result | Should -BeFalse
+        }
+
+        It 'Returns $false for non-matching string via direct parameter binding' {
+            $result = Test-InvokeCommandFilter -InputObject 'Just a regular string'
+
+            $result | Should -BeFalse
+        }
+    }
 }

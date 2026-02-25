@@ -212,3 +212,61 @@ function Compare-Hashtable
         $Results
     }
 }
+
+function Get-DatumRsopSafe
+{
+    <#
+    .SYNOPSIS
+    Wrapper around Get-DatumRsop that captures warnings during RSOP resolution.
+
+    .DESCRIPTION
+    Calls Get-DatumRsop while capturing the warning stream via redirection.
+    Returns a hashtable with the RSOP result and any warnings generated during
+    resolution. This allows tests to assert that no handler errors occurred
+    during RSOP computation.
+    #>
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [hashtable]
+        $Datum,
+
+        [Parameter(Mandatory = $true)]
+        [object[]]
+        $AllNodes,
+
+        [Parameter()]
+        [scriptblock]
+        $Filter,
+
+        [Parameter()]
+        [switch]
+        $IgnoreCache
+    )
+
+    $rsopParams = @{
+        Datum       = $Datum
+        AllNodes    = $AllNodes
+        IgnoreCache = $IgnoreCache.IsPresent
+    }
+
+    if ($Filter)
+    {
+        $rsopParams.Filter = $Filter
+    }
+
+    $allOutput = @(Get-DatumRsop @rsopParams 3>&1)
+    $warnings = @($allOutput.Where({ $_ -is [System.Management.Automation.WarningRecord] }))
+    $result = @($allOutput.Where({ $_ -isnot [System.Management.Automation.WarningRecord] }))
+
+    if ($result.Count -eq 1)
+    {
+        $result = $result[0]
+    }
+
+    @{
+        Result   = $result
+        Warnings = $warnings
+    }
+}

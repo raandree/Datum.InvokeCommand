@@ -237,25 +237,58 @@ Current month is $((Get-Date).Month)=]'
             It 'Invalid Input returns $null and throws an error' {
                 $inputObject = '[x={ Get-Date ='
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
-                $result | Should -BeNullOrEmpty
+                $result = $null
+                $errorThrown = $false
+                try
+                {
+                    $result = Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum
+                }
+                catch
+                {
+                    $errorThrown = $true
+                }
+
+                $errorThrown | Should -BeTrue -Because 'Invalid input should throw when DatumHandlersThrowOnError is set'
+                $result | Should -BeNullOrEmpty -Because 'Invalid input should not return a value'
             }
 
             It 'Invalid ScriptBlock, returns $null and throws an error' {
                 $inputObject = '[x={ Get-Date =]'
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
-                $result | Should -BeNullOrEmpty
+                $result = $null
+                $errorThrown = $false
+                try
+                {
+                    $result = Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum
+                }
+                catch
+                {
+                    $errorThrown = $true
+                }
+
+                $errorThrown | Should -BeTrue -Because 'Invalid scriptblock should throw when DatumHandlersThrowOnError is set'
+                $result | Should -BeNullOrEmpty -Because 'Invalid scriptblock should not return a value'
             }
 
-            It 'Invalid ScriptBlock, returns $null and throws an error' {
+            It 'Invalid ScriptBlock, returns $null and throws an error (multi-line)' {
                 $inputObject = @'
 [x={
 Get-Date =]
 '@
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
-                $result | Should -BeNullOrEmpty
+                $result = $null
+                $errorThrown = $false
+                try
+                {
+                    $result = Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum
+                }
+                catch
+                {
+                    $errorThrown = $true
+                }
+
+                $errorThrown | Should -BeTrue -Because 'Invalid multi-line scriptblock should throw when DatumHandlersThrowOnError is set'
+                $result | Should -BeNullOrEmpty -Because 'Invalid multi-line scriptblock should not return a value'
             }
 
             It 'Invalid multi-line string, returns $null and throws an error' {
@@ -265,8 +298,19 @@ Get-Date =]
 Current month is $((Get-Date).Month)=]'
 '@
 
-                { Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum } | Should -Throw
-                $result | Should -BeNullOrEmpty
+                $result = $null
+                $errorThrown = $false
+                try
+                {
+                    $result = Invoke-InvokeCommandAction -InputObject $inputObject -Datum $datum
+                }
+                catch
+                {
+                    $errorThrown = $true
+                }
+
+                $errorThrown | Should -BeTrue -Because 'Invalid multi-line string should throw when DatumHandlersThrowOnError is set'
+                $result | Should -BeNullOrEmpty -Because 'Invalid multi-line string should not return a value'
             }
 
             It 'Literal String returns $null and throws an error' {

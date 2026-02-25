@@ -82,26 +82,26 @@ function Test-InvokeCommandFilter
     process
     {
         if ($InputObject -is [string])
-    {
-        $all = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['0'].Value
-        $content = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
+        {
+            $all = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['0'].Value
+            $content = $datumInvokeCommandRegEx.Match($InputObject.Trim()).Groups['Content'].Value
 
-        if ($ReturnValue -and $content)
-        {
-            $all
+            if ($ReturnValue -and $content)
+            {
+                $all
+            }
+            elseif ($content)
+            {
+                return $true
+            }
+            elseif (-not $MyInvocation.ExpectingInput)
+            {
+                return $false
+            }
         }
-        elseif ($content)
-        {
-            return $true
-        }
-        else
+        elseif (-not $MyInvocation.ExpectingInput)
         {
             return $false
         }
-    }
-    else
-    {
-        return $false
-    }
     }
 }
