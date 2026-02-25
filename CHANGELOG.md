@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-02-23
+
 ### Changed
 
 - Migrated `tests/QA/module.tests.ps1` to Pester 5 syntax using
