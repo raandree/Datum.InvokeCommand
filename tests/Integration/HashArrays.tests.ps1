@@ -91,8 +91,13 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
 
             param ($Node, $PropertyPath, $ScriptBlock, $Value)
 
-            $rsop1 = Get-DatumRsop -Datum $datum1 -AllNodes $configurationData1.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
-            $rsop2 = Get-DatumRsop -Datum $datum2 -AllNodes $configurationData2.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
+            $rsop1Data = Get-DatumRsopSafe -Datum $datum1 -AllNodes $configurationData1.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
+            $rsop1Data.Warnings | Should -HaveCount 0 -Because "RSOP for '$Node' (datum1/static) should not produce warnings"
+            $rsop1 = $rsop1Data.Result
+
+            $rsop2Data = Get-DatumRsopSafe -Datum $datum2 -AllNodes $configurationData2.AllNodes -Filter { $_.Name -eq $Node } -IgnoreCache
+            $rsop2Data.Warnings | Should -HaveCount 0 -Because "RSOP for '$Node' (datum2/dynamic) should not produce warnings"
+            $rsop2 = $rsop2Data.Result
 
             if ($PropertyPath) {
                 $cmd1 = [scriptblock]::Create("`$rsop1.$PropertyPath")
@@ -103,11 +108,17 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
                 $cmd2 = [scriptblock]::Create($ScriptBlock.Replace('<RsopStore>', '$rsop2'))
             }
 
+            $result1 = & $cmd1
+            $result2 = & $cmd2
+
+            $result1 | Should -Not -BeNullOrEmpty -Because "datum1 (static) property '$PropertyPath' for node '$Node' should have a value"
+            $result2 | Should -Not -BeNullOrEmpty -Because "datum2 (dynamic) property '$PropertyPath' for node '$Node' should have a value"
+
             if ($Value) {
-                & $cmd2 | Sort-Object | Should -Be $Value
+                $result2 | Sort-Object | Should -Be $Value
             }
             else {
-                & $cmd1 | Sort-Object | Should -Be (& $cmd2 | Sort-Object)
+                $result1 | Sort-Object | Should -Be ($result2 | Sort-Object)
             }
 
         }
