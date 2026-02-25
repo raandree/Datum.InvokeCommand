@@ -56,7 +56,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
             }
             @{
                 Node         = 'DSCWeb01'
-                PropertyPath = 'HashArray2[2].Key'
+                PropertyPath = 'HashArray2[2].Name'
             }
             @{
                 Node         = 'DSCWeb01'
@@ -77,7 +77,7 @@ Describe "RSOP tests based on 'DscWorkshopConfigData' test data" {
             }
             @{
                 Node         = 'DSCWeb01'
-                PropertyPath = 'HashArray3[-1].Key'
+                PropertyPath = 'HashArray3[-1].Name'
             }
             @{
                 Node         = 'DSCWeb01'
