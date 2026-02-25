@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-02-25
+
 ### Fixed
 
 - Fix `Test-InvokeCommandFilter` emitting `$false` for every non-matching
